@@ -47,7 +47,7 @@ export function listAgentSkills() {
 export function agentSkillInstructions() {
   return [
     "# Event Twin 로컬 Agent Skills",
-    "아래 지침은 앱에 포함된 행사 도메인 스킬이며 NVIDIA Skill API의 실행 또는 인증을 뜻하지 않는다. 서버의 도구 권한과 오너 승인 규칙이 우선한다.",
+    "아래 지침은 앱에 포함된 오프라인 비즈니스 도메인 스킬이며 NVIDIA Skill API의 실행 또는 인증을 뜻하지 않는다. 서버의 도구 권한과 오너 승인 규칙이 우선한다.",
     ...skills.map(({ name, instructions }) => `## ${name}\n${instructions}`),
   ].join("\n\n");
 }

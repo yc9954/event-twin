@@ -29,12 +29,12 @@ export function analyzeArea(project){
   return {id:`research-${Date.now()}`,createdAt:new Date().toISOString(),inputRevision:project.inputRevision,coordinate,inBounds:context?true:inBounds,baseMapInBounds:inBounds,coverage,radius,source,
     tools:[
       {id:'market',name:'상권 지도',status:withinCoverage?'complete':'limited',basis,summary:withinCoverage?`반경 ${radius}m · 선택 분류의 OSM 등록 객체 ${facilities.length}개 (고유 사업장 수 아님)`:`반경 ${radius}m 일부 또는 전부가 수집 범위 밖입니다. 수집된 객체 ${facilities.length}개는 전체 수가 아닙니다.`,data:{count:facilities.length,counts,coverage,collectedAt:source.collectedAt}},
-      {id:'audience',name:'관객 가정',status:'assumption',basis:'사용자 입력, 실측 인구 아님',summary:`${project.assumptions.visitors}명 / ${project.assumptions.durationMinutes}분`,data:{visitors:project.assumptions.visitors,peak:project.assumptions.arrivalPeak}},
+      {id:'audience',name:'방문객 가정',status:'assumption',basis:'사용자 입력, 실측 인구 아님',summary:`${project.assumptions.visitors}명 / ${project.assumptions.durationMinutes}분`,data:{visitors:project.assumptions.visitors,peak:project.assumptions.arrivalPeak}},
       {id:'places',name:'주변 시설',status:withinCoverage?'complete':'limited',basis:`${basis} / 영업 여부 미확인`,summary:withinCoverage?'선택한 카페·음식점·문화시설 분류의 OSM 객체를 직선거리순으로 표시':'수집 범위와 겹치는 지역만 표시한 불완전한 시설 목록',data:facilities.slice(0,30)},
       {id:'access',name:'접근성',status:accessComplete?'complete':'limited',basis:'Haversine 직선거리 / 실제 도보 경로·소요 시간 아님 / 조회된 역만 비교',summary:accessSummary,data:stations},
-      {id:'weather',name:'날씨·일정',status:'unavailable',basis:'공식 예보·행사 일정 소스 미연결',summary:'실제 날씨·행사 일정을 확인할 데이터 연결이 필요합니다.',data:null},
+      {id:'weather',name:'날씨·일정',status:'unavailable',basis:'공식 예보·주변 일정 소스 미연결',summary:'실제 날씨·운영 일정을 확인할 데이터 연결이 필요합니다.',data:null},
       {id:'budget',name:'운영 예산',status:'assumption',basis:'사용자 예산 / 견적 아님',summary:`예산 ${project.assumptions.budget.toLocaleString()}원 · 면적 ${area}m²`,data:{budget:project.assumptions.budget,area,staff:project.space.staff}},
       {id:'experiment',name:'실험 설계',status:'complete',basis:'실행 설정',summary:`16안 × ${project.assumptions.replications}회 · 동일 난수 seed ${project.assumptions.seed}`,data:{seed:project.assumptions.seed,replications:project.assumptions.replications}},
-      {id:'crm',name:'CRM 구조',status:'complete',basis:'프로젝트 상태 / 로컬 DB',summary:project.crm.deployment?'승인된 운영 패키지 적용됨':'안 승인 후 구역·슬롯·참가자·동의·업무 생성',data:{deployed:Boolean(project.crm.deployment),people:project.crm.people.length,tasks:project.crm.tasks.filter(t=>t.status!=='done').length}}
+      {id:'crm',name:'CRM 구조',status:'complete',basis:'프로젝트 상태 / 로컬 DB',summary:project.crm.deployment?'승인된 운영 패키지 적용됨':'안 승인 후 구역·슬롯·고객·동의·업무 생성',data:{deployed:Boolean(project.crm.deployment),people:project.crm.people.length,tasks:project.crm.tasks.filter(t=>t.status!=='done').length}}
     ],facilities,stations,warning:`${context?'공공 API의 선택 분류 응답이며 전체 사업장 목록은 아닙니다.':'현재 네트워크 조회가 아닌 실제 지리 스냅샷입니다.'} 시설 객체 수는 유동인구나 매출 예측이 아닙니다. 같은 장소의 중복 객체가 있을 수 있으며 근접 시설은 직접 경쟁사라는 뜻이 아닙니다. 현장 접근성·수용·피난은 별도 검토하세요.`};
 }

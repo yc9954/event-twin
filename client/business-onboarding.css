@@ -1,0 +1,30 @@
+.create-business-form { padding: 24px; }
+.project-start-options, .space-onboarding fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.project-start-options legend { font-size: 17px; font-weight: 600; margin-bottom: 18px; }
+.project-start-options > label:not(.field) { display: flex; align-items: flex-start; gap: 12px; border: 1px solid #dfe3e8; border-radius: 5px; padding: 17px; margin-bottom: 12px; cursor: pointer; }
+.project-start-options > label.selected { border-color: #76b900; background: #f7faef; }
+.project-start-options input[type=radio] { width: 16px; height: 16px; accent-color: #76b900; flex-shrink: 0; }
+.project-start-options strong, .project-start-options small { display: block; }
+.project-start-options small { margin-top: 8px; color: #72806b; line-height: 1.7; }
+.project-start-options > .field { margin-top: 20px; }
+.space-onboarding { padding: 18px; background: white; border: 1px solid #dce5d2; border-left: 3px solid #76b900; border-radius: 5px; margin: 16px 0; }
+.onboarding-heading { display: flex; gap: 10px; align-items: center; color: #49632c; }
+.onboarding-heading small { font: 9px ui-monospace, monospace; letter-spacing: .08em; }
+.onboarding-heading h3 { margin: 6px 0 0; color: #374151; font-size: 15px; }
+.space-onboarding > p { font-size: 11px; line-height: 1.7; color: #72806b; margin: 12px 0 16px; }
+.onboarding-fields { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin: 12px 0; }
+.space-onboarding .field { min-width: 0; margin: 0; font-size: 11px; }
+.space-onboarding .field input, .space-onboarding .field select { padding: 9px; min-width: 0; width: 100%; }
+.onboarding-confirm { align-items: flex-start; line-height: 1.7; font-size: 11px; background: #f7f9f3; padding: 10px; }
+.onboarding-confirm input { flex-shrink: 0; margin-top: 3px; }
+.onboarding-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 14px; }
+.onboarding-actions .btn { font-size: 11px; padding: 9px 10px; }
+.model-start { padding: 12px 18px; border-bottom: 1px solid #e3e8dc; background: #f5f9ee; font-size: 11px; line-height: 1.6; }
+.model-start strong { color: #456320; }
+.model-start p { margin: 5px 0 8px; }
+.model-start .btn { font-size: 11px; padding: 7px 10px; }
+.business-demo-note { padding: 10px 14px; margin: 0 0 12px; border: 1px solid #dae4cf; border-radius: 4px; font-size: 11px; color: #62754c; background: #f7f9f2; }
+.brief-page.agent-mode.needs-space .chat-panel { height: auto; min-height: 0; max-height: none; }
+.brief-page.agent-mode.needs-space .chat-history { min-height: 0; max-height: none; overflow: visible; flex: none; }
+.brief-page.agent-mode.needs-space .composer { flex: none; }
+@media(max-width: 520px) { .onboarding-fields { grid-template-columns: repeat(2,minmax(0,1fr)); } .create-business-form { padding: 18px; } }

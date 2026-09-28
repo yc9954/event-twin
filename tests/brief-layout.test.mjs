@@ -44,6 +44,26 @@ test('Brief leads with agent control while retaining real map evidence and short
   assert.match(html, /<details class="brief-project-context"><summary>/);
 });
 
+test('first conversation offers real space fields before candidate execution', () => {
+  const html = render();
+  assert.match(html, /needs-space/);
+  assert.match(html, /aria-label="대화에서 공간 설정"/);
+  for (const label of ['공간 구조', '가로 (m)', '세로 (m)', '높이 (m)', '운영 인력 (명)', '체험·서비스 구역 (개)', '공간 확인 · 저장', '채팅 입력 예시']) assert.ok(html.includes(label));
+  assert.match(html, /class="btn primary" disabled=""/);
+});
+
+test('prepared demo shows provenance and next actions without asking for measured demo dimensions', () => {
+  const project = createProject('예시 비즈니스');
+  project.demo = { synthetic: true };
+  project.space.confirmed = true;
+  const html = render(project, { health: { modelConfigured: true, provider: { provider: 'nvidia', connectionId: 'test' } } });
+  assert.match(html, /예시 비즈니스 · 합성 입력/);
+  assert.match(html, /NVIDIA 에이전트/);
+  assert.match(html, /맥락 전송에 동의하고 에이전트 켜기/);
+  assert.doesNotMatch(html, /aria-label="대화에서 공간 설정"/);
+  assert.match(html, /공간 조건 검토/);
+});
+
 test('Brief keeps model opt-in and image selection disabled by default, without rendering side effects', () => {
   const project = createProject('사진 테스트');
   project.attachments = [{ id: 'photo-1', name: '실측 공간.jpg' }];
@@ -57,7 +77,7 @@ test('Brief keeps model opt-in and image selection disabled by default, without 
 
 test('model consent discloses project context, same-connection history, tool results and optional photos', () => {
   const html = render();
-  for (const phrase of ['행사 목표·위치·공간·실험·최근 관측', '이전에 동의해 전송한 대화 최대 8건', '도구 실행 결과', 'CRM 참가자 연락처 필드는 제외', '목표나 대화에 직접 적은 개인정보', '사진은 별도 선택·동의']) assert.ok(html.includes(phrase), phrase);
+  for (const phrase of ['비즈니스 목표·위치·공간·실험·최근 관측', '이전에 동의해 전송한 대화 최대 8건', '도구 실행 결과', 'CRM 고객 연락처 필드는 제외', '목표나 대화에 직접 적은 개인정보', '사진은 별도 선택·동의']) assert.ok(html.includes(phrase), phrase);
   assert.match(html, /id="model-data-disclosure"/);
   assert.match(html, /aria-describedby="model-data-disclosure"/);
   assert.match(html, /모델 사용 · 맥락 전송 동의/);
@@ -103,7 +123,7 @@ test('Brief goal form keeps its labeled fields and disables save while pending',
     project, pending: '저장 중', act: () => assert.fail('SSR must not submit the goal form'),
   }));
   assert.match(html, /<form class="panel brief-form">/);
-  for (const label of ['행사 이름', '지역 · 장소', '핵심 목표', '목표 저장']) assert.ok(html.includes(label));
+  for (const label of ['비즈니스 이름', '지역 · 장소', '핵심 목표', '목표 저장']) assert.ok(html.includes(label));
   assert.equal((html.match(/<input /g) || []).length, 2);
   assert.equal((html.match(/<textarea /g) || []).length, 1);
   assert.match(html, /<button disabled="" class="btn primary/);

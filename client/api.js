@@ -182,10 +182,10 @@ export const api = {
     }),
   health: () => request("/api/health"),
   projects: () => request("/api/projects"),
-  create: (name) =>
+  create: (name, template = 'blank') =>
     request("/api/projects", {
       method: "POST",
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, template }),
     }),
   project: (id) => request(`/api/projects/${encodeURIComponent(id)}`),
   natAudit: (id) => request(`/api/projects/${encodeURIComponent(id)}/nat-audit`),
@@ -252,7 +252,7 @@ export function parsePeopleCSV(text) {
   row.push(field);
   if (row.some((x) => x.trim())) table.push(row);
   if (table.length < 2)
-    throw new Error("헤더와 참가자 데이터가 있는 CSV를 선택해 주세요.");
+    throw new Error("헤더와 고객 데이터가 있는 CSV를 선택해 주세요.");
   const aliases = {
     name: "name",
     이름: "name",

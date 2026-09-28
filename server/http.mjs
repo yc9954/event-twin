@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join, resolve, sep } from "node:path";
 import { createStore, AppError } from "./store.mjs";
 import { createDomain, createProject, audit } from "./domain.mjs";
+import { initializeDemoProject } from "./demo-project.mjs";
 import { sanitizeAgentEvent } from "./agent.mjs";
 import { runtimeDescriptor } from "./agent-runtime.mjs";
 import { assertGatewayAccess } from './gateway-auth.mjs';
@@ -520,9 +521,11 @@ export async function createAppServer({
         return json(response, 200, { projects: store.list().filter(p=>!demoOwner||demoAccess.owns(demoOwner,p.id)) });
       if (pathname === "/api/projects" && method === "POST") {
         const body = await readJson(request);
-        if (Object.keys(body).some((key) => key !== "name"))
-          throw new AppError("프로젝트 이름만 지정할 수 있습니다.");
+        if (Object.keys(body).some((key) => !["name", "template"].includes(key)) ||
+            (body.template !== undefined && !["blank", "demo"].includes(body.template)))
+          throw new AppError("프로젝트 이름과 지원되는 시작 방식만 지정할 수 있습니다.");
         const next=createProject(body.name);
+        if (body.template === "demo") initializeDemoProject(next, domain);
         if(demoOwner)demoAccess.register(demoOwner,next.id);
         return json(response, 201, { project: store.create(next) });
       }

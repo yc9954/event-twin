@@ -53,7 +53,7 @@ export default function Scene({
         ref={canvas}
         style={{ display: "block", width: "100%", height: "100%" }}
         role="img"
-        aria-label={`${candidate?.name || "공간"} · ${candidate?.space?.width || 24} × ${candidate?.space?.depth || 18}m · 절차적 관객 모션`}
+        aria-label={`${candidate?.name || "공간"} · ${candidate?.space?.width || 24} × ${candidate?.space?.depth || 18}m · 절차적 방문객 모션`}
       />
       {!candidate && (
         <span style={{ position: "absolute", inset: 20 }}>

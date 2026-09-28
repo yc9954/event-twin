@@ -46,7 +46,7 @@ export function audit(project, action, detail = {}, actor = "owner") {
   project.audit.push({ id: uuid("AUD"), at: now(), actor, action, detail });
 }
 
-export function createProject(name = "새 오프라인 행사") {
+export function createProject(name = "새 오프라인 비즈니스") {
   const time = now();
   return {
     id: uuid("EVT"),
@@ -56,7 +56,7 @@ export function createProject(name = "새 오프라인 행사") {
     createdAt: time,
     updatedAt: time,
     brief: {
-      goal: "방문자의 체험 완료와 유효한 동의를 높이는 행사",
+      goal: "방문자의 체험 완료와 유효한 동의를 높이는 오프라인 비즈니스",
       location: "성수동",
       lat: 37.5445,
       lng: 127.052,
@@ -192,7 +192,7 @@ function recordActivity(project, type, detail) {
 }
 function addPerson(project, row, sample = false) {
   allowed(row, ["name", "email", "phone", "marketingConsent"]);
-  const name = text(row.name, "참가자 이름", 120, true);
+  const name = text(row.name, "고객 이름", 120, true);
   const email = row.email ? text(row.email, "이메일", 254).toLowerCase() : "";
   const phone = row.phone ? text(row.phone, "전화번호", 40) : "";
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -789,7 +789,7 @@ export function createDomain({ generateCandidates, runBatch, analyzeArea }) {
           payload.rows.length < 1 ||
           payload.rows.length > 500
         )
-          fail("1–500명의 참가자 행을 입력해 주세요.");
+          fail("1–500명의 고객 행을 입력해 주세요.");
         if (payload.sample !== undefined) boolean(payload.sample, "sample");
         let added = 0,
           duplicates = 0;
@@ -853,7 +853,7 @@ export function createDomain({ generateCandidates, runBatch, analyzeArea }) {
               registrationId: registration.id,
               title:
                 trigger === "waiting"
-                  ? "참가자 대기 확인"
+                  ? "고객 대기 확인"
                   : "피드백 요청 초안 검토",
               status: "open",
               kind: "internal-only",
@@ -871,7 +871,7 @@ export function createDomain({ generateCandidates, runBatch, analyzeArea }) {
         if (
           !project.crm.people.some((person) => person.id === payload.personId)
         )
-          fail("참가자를 찾을 수 없습니다.", "NOT_FOUND", 404);
+          fail("고객을 찾을 수 없습니다.", "NOT_FOUND", 404);
         boolean(payload.granted, "동의");
         const event = {
           id: uuid("CON"),
@@ -1100,6 +1100,7 @@ export function createDomain({ generateCandidates, runBatch, analyzeArea }) {
       version: project.version,
       inputRevision: project.inputRevision,
       brief: project.brief,
+      demo: project.demo ? { template: project.demo.template, synthetic: project.demo.synthetic } : null,
       space: project.space,
       assumptions: project.assumptions,
       candidates: project.candidates,

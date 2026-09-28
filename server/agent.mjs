@@ -55,7 +55,7 @@ const tool = (name, description, properties = {}) => ({
 export const agentTools = [
   tool(
     "get_project",
-    "행사 목표, 공간·실험 입력, 결과·승인 상태 조회. 개인 연락처는 제공되지 않는다.",
+    "비즈니스 목표, 공간·실험 입력, 결과·승인 상태 조회. 개인 연락처는 제공되지 않는다.",
   ),
   tool(
     "analyze_area",
@@ -307,6 +307,7 @@ function safeProject(p) {
     version: p.version ?? null,
     inputRevision: p.inputRevision,
     brief: p.brief,
+    demo: p.demo ? pick(p.demo, ["template", "synthetic"]) : null,
     space: p.space,
     assumptions: p.assumptions,
     candidateCount: p.candidates?.length || 0,
@@ -428,7 +429,7 @@ export function localCommands(message) {
   for (const [name, pattern] of commands)
     if (pattern.test(text)) return [[name, {}]];
   const visitors = text.match(
-    /^(?:방문객|관객|방문자)\s*(\d+)명(?:으로)? (?:변경|설정)(?:해\s*줘|해\s*주세요|해주세요)?$/,
+    /^(?:방문객|관객|방문자|고객)\s*(\d+)명(?:으로)? (?:변경|설정)(?:해\s*줘|해\s*주세요|해주세요)?$/,
   );
   if (visitors) return [["update_assumptions", { visitors: +visitors[1] }]];
 
@@ -585,13 +586,17 @@ export async function runAgent({
         mode: "local",
       };
     const calls = localCommands(message);
+    if (project.space?.confirmed === false &&
+        (calls.some(([name]) => name === "generate_candidates" || name === "run_simulation") || /^(?:다시|재시도)[.!]?$/u.test(message.trim()))) {
+      return { reply: "먼저 공간 조건을 확인해 주세요.\n\n대화 아래 **공간 설정 카드**에서 구조·가로·세로·높이·서비스 구역·인력을 입력하고 **공간 확인 · 저장**을 누르면 됩니다. 채팅으로 `24×18m 갤러리 높이 3.4m 부스 3개 인력 6명`처럼 초안을 입력할 수도 있습니다.\n\n확인 후 **16개 안 생성**으로 이어갈게요. 아직 후보를 생성하거나 실험하지 않았습니다.", steps, mode: "local" };
+    }
     for (const [name, args] of calls) await invoke(name, args);
     const failed = steps.filter((s) => s.status === "failed");
     const reply = !calls.length
       ? "작업을 실행하지 않았습니다. 로컬 모드는 명시적인 명령 하나만 실행합니다. “상권 분석”, “24×18m 중정 부스 4개”, “16개 안 생성”, “시뮬레이션 실행”, “CRM 구축”을 사용할 수 있습니다. 질문·설명 요청·부정 명령·복합 요청은 실행하지 않습니다. 자유 대화는 외부 모델 연결 모드를 사용해주세요."
       : failed.length
         ? `일부 작업을 완료하지 못했습니다: ${failed.map((s) => s.error).join(" / ")}`
-        : `${steps.map((s) => s.name).join(" → ")} 완료. ${calls.some(([n]) => n === "propose_space") ? "공간 초안이 바뀌었습니다. 설계·실험에서 실제 기준 치수를 확인한 뒤 비교해주세요." : "각 탭에서 저장된 결과와 입력 근거를 확인할 수 있습니다."}`;
+        : `${steps.map((s) => s.name).join(" → ")} 완료. ${calls.some(([n]) => n === "propose_space") ? "공간 초안이 바뀌었습니다. 대화 아래 공간 설정 카드에서 입력값을 검토하고 ‘공간 확인 · 저장’을 눌러주세요. 그다음 16개 안을 생성합니다." : "각 탭에서 저장된 결과와 입력 근거를 확인할 수 있습니다."}`;
     return { reply, steps, mode: "local" };
   }
   if (!Array.isArray(imageIds) || imageIds.length > 3)
@@ -600,7 +605,8 @@ export async function runAgent({
   // Fail before reading any selected image or making a provider request.
   assertImageCapability(configuration, imageIds);
   const directCommands = localCommands(message);
-  const requiredTool = directCommands.length === 1 ? directCommands[0][0] : null;
+  const needsSpace = project.space?.confirmed === false && directCommands.some(([name]) => name === "generate_candidates" || name === "run_simulation");
+  const requiredTool = directCommands.length === 1 && !needsSpace ? directCommands[0][0] : null;
   const instructions = `${runtimeContext({ useModel, model: configuration.model, provider: configuration.provider, modelConfigured: true, modelConfiguration: configuration })}\n${guide}\n${agentSkillInstructions()}${requiredTool ? `\n이번 요청은 명시적 실행 명령입니다. 첫 응답에서 ${requiredTool} 도구를 호출하고, 실제 도구 결과를 받기 전에는 수치나 완료 사실을 말하지 마세요.` : ""}`;
   const input = [
     {

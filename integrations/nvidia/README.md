@@ -91,7 +91,7 @@ NIM_TERMS_ACCEPTED=yes node scripts/nvidia-nim-start.mjs --allow-model-download
 
 ## NemoClaw / OpenShell
 
-현재 앱은 수정한 NemoClaw runtime-context 모듈을 사용하지만 OpenShell 샌드박스는 연결되지 않았다. 공식 문서는 Apple Silicon의 Docker Desktop/Colima 경로를 제한적으로 테스트한다고 설명한다. 따라서 “Mac 또는 GPU 부재 때문에 NemoClaw 자체가 불가능”한 것은 아니다. 이 작업은 시스템 설치·온보딩·컨테이너 이미지 pull을 하지 않는다.
+로컬 단독 실행은 수정한 NemoClaw runtime-context 모듈을 사용하며 샌드박스 연결을 별도로 보고한다. 공개 Brev 배포에서는 앱과 NAT가 실제 OpenShell 샌드박스 안에서 실행되고 관리형 Nemotron 추론을 사용한다. [상세 아키텍처](../../docs/ARCHITECTURE.md)를 참고한다. 공식 문서는 Apple Silicon의 Docker Desktop/Colima 경로를 제한적으로 테스트한다고 설명한다. 따라서 “Mac 또는 GPU 부재 때문에 NemoClaw 자체가 불가능”한 것은 아니다. 이 작업은 시스템 설치·온보딩·컨테이너 이미지 pull을 하지 않는다.
 
 ## 공식 근거
 

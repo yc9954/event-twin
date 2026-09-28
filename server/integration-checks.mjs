@@ -17,7 +17,7 @@ export function createIntegrationChecks({ runAgent, getConfiguration, clock = Da
     busy = true; lastAttempt = clock();
     const started = clock(), nonce = randomUUID();
     let invoked = false, attempts = 0;
-    const probeProject = createProject('연결 검사용 임시 프로젝트 — 실제 행사 아님');
+    const probeProject = createProject('연결 검사용 임시 프로젝트 — 실제 비즈니스 아님');
     try {
       const result = await runAgent({
         project: structuredClone(probeProject),

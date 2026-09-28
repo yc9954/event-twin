@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Scene from "./Scene.jsx";
 import { recordSceneCanvas, sceneRecordingSupport, SCENE_CAPTURE_SIZE } from "./scene-recording.mjs";
 
-const cameras = [["perspective", "전체"], ["entry", "입구"], ["follow", "관객 따라가기"], ["top", "평면"]];
+const cameras = [["perspective", "전체"], ["entry", "입구"], ["follow", "방문객 따라가기"], ["top", "평면"]];
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
 export default function ScenePlayer({ candidate, initialMoving = true }) {
@@ -91,14 +91,14 @@ export default function ScenePlayer({ candidate, initialMoving = true }) {
           className={view === key ? "active" : ""} disabled={capturing} onClick={() => setView(key)}>{label}</button>)}
       </div>
       <button type="button" className="scene-player-play" disabled={capturing}
-        aria-label={moving ? "관객 모션 일시정지" : "관객 모션 재생"}
+        aria-label={moving ? "방문객 모션 일시정지" : "방문객 모션 재생"}
         onClick={() => setMoving((value) => !value)}>{moving ? "일시정지" : "재생"}</button>
     </div>
     <div ref={host} className="scene-player-stage detail-scene">
       <Scene candidate={capturing ? captureCandidate.current : candidate} view={view}
         moving={capturing || moving} captureSize={capturing ? SCENE_CAPTURE_SIZE : null} />
       <div className="scene-player-overlay" aria-hidden="true">
-        <span>{capturing ? "● REC · 1080p" : moving ? "관객 모션 재생 중" : "일시정지"}</span>
+        <span>{capturing ? "● REC · 1080p" : moving ? "방문객 모션 재생 중" : "일시정지"}</span>
         <span>{cameras.find(([key]) => key === view)?.[1]}</span>
       </div>
     </div>
@@ -122,6 +122,6 @@ export default function ScenePlayer({ candidate, initialMoving = true }) {
       {error && <p className="scene-record-error" role="alert">{error}</p>}
       {download?.savedPath && <p className="scene-record-status" role="status">로컬 저장 완료 · {download.savedPath}</p>}
     </div>
-    <p className="scene-player-disclaimer">관객은 절차적 시각화입니다. 실측 이동이나 LLM 페르소나의 행동 예측이 아닙니다. 녹화는 3D 캔버스만 저장하며, 음성·화면 공유·외부 전송을 사용하지 않습니다.</p>
+    <p className="scene-player-disclaimer">방문객은 절차적 시각화입니다. 실측 이동이나 LLM 페르소나의 행동 예측이 아닙니다. 녹화는 3D 캔버스만 저장하며, 음성·화면 공유·외부 전송을 사용하지 않습니다.</p>
   </section>;
 }

@@ -182,7 +182,7 @@ export function agentLifecycle(project = {}) {
   const deployment = deploymentRelation(project);
   return [
     { id: 'research', label: '주변 근거', ...summary(project.research, '분석 전', '현재 입력 분석됨') },
-    { id: 'space', label: '실측 치수', status: project.space?.confirmed ? 'complete' : 'unconfirmed', detail: project.space?.confirmed ? '오너 확인됨' : '오너 확인 필요' },
+    { id: 'space', label: project.demo?.synthetic ? '예시 공간 기준' : '실측 치수', status: project.space?.confirmed ? 'complete' : 'unconfirmed', detail: project.space?.confirmed ? project.demo?.synthetic ? '합성 조건 준비됨' : '오너 확인됨' : '오너 확인 필요' },
     { id: 'candidates', label: '후보 공간', status: candidates ? 'complete' : 'pending', detail: candidates ? `${candidates}개 생성됨` : '후보 없음' },
     { id: 'simulation', label: '비교 실험', ...summary(project.simulation, '실험 전', `${project.simulation?.results?.length || 0}개 결과 저장됨`) },
     { id: 'approval', label: '선택안 승인', ...summary(project.approval, '오너 승인 전', `${project.approval?.candidateId || '선택안'} 승인됨`) },

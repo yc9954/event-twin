@@ -282,6 +282,8 @@ test("HTTP model deltas stream before commit and persisted context survives a fr
 
 test("local tool failure is a truthful failed step, not a failed/rolled-back conversation", async (t) => {
   const f = await fixture(t);
+  await fetch(`${f.url}/api/projects/${f.p.id}/actions`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ type: "UPDATE_SPACE", payload: { confirmed: true }, expectedVersion: f.p.version }) });
+  f.p.version += 1;
   const response = await f.chat({ message: "시뮬레이션 실행" });
   const events = await collect(response);
   assert.deepEqual(
