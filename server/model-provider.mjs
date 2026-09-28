@@ -3,6 +3,7 @@ import { withProviderRetry } from './provider-retry.mjs';
 import { AppError } from "./store.mjs";
 import { agentBlueprint } from "../shared/agent-blueprint.mjs";
 import { createHmac, randomBytes } from "node:crypto";
+import { createAnthropicAdapter } from './anthropic-provider.mjs';
 
 // Connection settings only. A configured endpoint is never a verified service.
 // Docs: https://docs.api.nvidia.com/nim/reference/llm-apis
@@ -30,6 +31,10 @@ const providers = {
     baseKey: "NIM_BASE_URL",
     api: "chat-completions",
   },
+  anthropic: {
+    label: 'Claude API', modelKey: 'ANTHROPIC_MODEL', key: 'ANTHROPIC_API_KEY',
+    base: 'https://api.anthropic.com/v1', api: 'anthropic-messages',
+  },
 };
 const value = (env, key) =>
   typeof env[key] === "string" ? env[key].trim() : "";
@@ -39,7 +44,7 @@ const value = (env, key) =>
 // target in the browser-visible ID. Restarting the server renews consent.
 const consentSecret = randomBytes(32);
 export function modelConnectionId(configuration, credential = "") {
-  const { provider, model, baseURL, capabilities = {} } = configuration;
+  const { provider, model, baseURL, capabilities = {}, fallback } = configuration;
   return `model-v1-${createHmac("sha256", consentSecret)
     .update(
       JSON.stringify([
@@ -49,6 +54,7 @@ export function modelConnectionId(configuration, credential = "") {
         capabilities.api,
         capabilities.toolCalling === true,
         capabilities.images === true,
+        fallback?.connectionId || null,
       ]),
     )
     .update("\0")
@@ -61,6 +67,13 @@ const identified = (configuration, credential = "") => ({
 });
 
 export function getModelConfiguration(env = process.env) {
+  const primary = primaryConfiguration(env);
+  if (!['nvidia', 'nim'].includes(primary.provider) || value(env, 'MODEL_FALLBACK_PROVIDER') !== 'anthropic') return primary;
+  const fallback = primaryConfiguration({ ...env, MODEL_PROVIDER: 'anthropic' });
+  return identified({ ...primary, fallback }, value(env, providers[primary.provider].key));
+}
+
+function primaryConfiguration(env) {
   const requested = value(env, "MODEL_PROVIDER") || "openai";
   const spec = Object.hasOwn(providers, requested)
     ? providers[requested]
@@ -77,11 +90,11 @@ export function getModelConfiguration(env = process.env) {
       capabilities: { api: null, toolCalling: false, images: false },
       verified: false,
       configurationError:
-        "MODEL_PROVIDER는 openai, nvidia, nim 중 하나여야 합니다.",
+        "MODEL_PROVIDER는 openai, nvidia, nim, anthropic 중 하나여야 합니다.",
     });
   const missing = [];
   let model =
-    value(env, spec.modelKey) || (requested === "openai" ? "gpt-6-astra" : "");
+    value(env, spec.modelKey) || (requested === "openai" ? "gpt-6-astra" : requested === 'anthropic' ? 'claude-sonnet-4-6' : "");
   let baseURL = (spec.baseKey && value(env, spec.baseKey)) || spec.base || "";
   let configurationError = null;
   if (!model) missing.push(spec.modelKey);
@@ -340,7 +353,7 @@ function safeProviderError(error, label) {
       "MODEL_AUTH_FAILED",
     );
   return new AppError(
-    `${label} 호출에 실패했습니다. 서버 주소·모델 ID·도구 호출 설정을 확인해주세요. 다른 모델이나 로컬 모드로 자동 전환하지 않았습니다.`,
+    `${label} 호출에 실패했습니다. 서버 주소·모델 ID·도구 호출 설정을 확인해주세요. 요청을 완료하지 못했습니다.`,
     502,
     "MODEL_REQUEST_FAILED",
   );
@@ -348,9 +361,10 @@ function safeProviderError(error, label) {
 
 // The injected client is solely a unit-test seam; HTTP never accepts it from users.
 // No constructor, network probe or provider switch happens in the config getter.
-export function createModelClient({
+function createSingleModelClient({
   env = process.env,
   client,
+  anthropicClient,
   sdkFactory = (options) => new OpenAI(options),
 } = {}) {
   const configuration = getModelConfiguration(env);
@@ -378,7 +392,7 @@ export function createModelClient({
   const options = {
     apiKey: key || "nim-local-no-auth",
     baseURL: configuration.baseURL,
-    timeout: 90000,
+    timeout: configuration.fallback?.configured ? 20000 : 90000,
     maxRetries: 0,
     // Do not inherit OpenAI project/organization credentials for NVIDIA/NIM.
     organization: configuration.provider === "openai" ? undefined : null,
@@ -388,12 +402,15 @@ export function createModelClient({
       : {}),
     fetch: (url, init) => globalThis.fetch(url, { ...init, redirect: "error" }),
   };
-  const sdk = client || sdkFactory(options);
+  const sdk = configuration.provider === 'anthropic' ? null : client || sdkFactory(options);
+  const anthropic = configuration.provider === 'anthropic'
+    ? createAnthropicAdapter({ apiKey: key, model: configuration.model, client: anthropicClient }) : null;
   return {
     configuration,
     async createResponse(request) {
       try {
         const { onTextDelta, signal, ...modelRequest } = request;
+        if (anthropic) return normalizeChatResponse(await anthropic(request));
         if (configuration.provider === "openai")
           return await collectResponsesStream(await sdk.responses.create({
             ...modelRequest,
@@ -445,6 +462,41 @@ export function createModelClient({
           : normalizeChatResponse(response);
       } catch (error) {
         throw safeProviderError(error, configuration.label);
+      }
+    },
+  };
+}
+
+const fallbackErrors = new Set(['MODEL_REQUEST_FAILED', 'MODEL_AUTH_FAILED', 'MODEL_RATE_LIMITED', 'MODEL_CREDITS_EXHAUSTED', 'MODEL_INVALID_RESPONSE']);
+
+// One request-scoped adapter, not a replay of the agent or its transaction.
+// A later round passes its already-completed tool receipts to Claude as-is.
+export function createModelClient(options = {}) {
+  const env = options.env || process.env;
+  const primary = createSingleModelClient(options);
+  let active = primary, fallback = null;
+  return {
+    configuration: primary.configuration,
+    get activeConfiguration() { return active.configuration; },
+    async createResponse(request) {
+      let emitted = false;
+      const { onFallback, ...input } = request;
+      const wrapped = { ...input, ...(input.onTextDelta ? { onTextDelta: async text => {
+        if (text) emitted = true;
+        await input.onTextDelta(text);
+      } } : {}) };
+      try { return await active.createResponse(wrapped); }
+      catch (error) {
+        if (active !== primary || !primary.configuration.fallback?.configured || emitted || request.signal?.aborted || !fallbackErrors.has(error.code)) throw error;
+        fallback ||= createSingleModelClient({ env: { ...env, MODEL_PROVIDER: 'anthropic', MODEL_FALLBACK_PROVIDER: '' }, anthropicClient: options.anthropicClient });
+        active = fallback;
+        const receipt = { from: primary.configuration.provider, to: 'anthropic', model: active.configuration.model, reason: error.code };
+        await onFallback?.(receipt);
+        try { return await active.createResponse(wrapped); }
+        catch (fallbackError) {
+          if (request.signal?.aborted) throw fallbackError;
+          throw new AppError(`기본 모델과 Claude fallback 요청을 완료하지 못했습니다. ${fallbackError.message}`, fallbackError.status || 502, 'MODEL_FALLBACK_FAILED');
+        }
       }
     },
   };

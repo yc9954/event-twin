@@ -299,6 +299,9 @@ export async function createAppServer({
       "NIM_BASE_URL",
       "NIM_MODEL",
       "NIM_API_KEY",
+      "ANTHROPIC_API_KEY",
+      "ANTHROPIC_MODEL",
+      "MODEL_FALLBACK_PROVIDER",
     ]
       .filter((key) => process.env[key] !== undefined)
       .map((key) => [key, process.env[key]]),
@@ -308,6 +311,7 @@ export async function createAppServer({
       openai: "OPENAI_MODEL",
       nvidia: "NVIDIA_MODEL",
       nim: "NIM_MODEL",
+      anthropic: "ANTHROPIC_MODEL",
     }[modelEnvironment.MODEL_PROVIDER || "openai"];
     if (modelKey) modelEnvironment[modelKey] = model;
   }

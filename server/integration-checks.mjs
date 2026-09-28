@@ -35,7 +35,9 @@ export function createIntegrationChecks({ runAgent, getConfiguration, clock = Da
       const returned = typeof result?.reply === 'string' && result.reply.length > 0;
       const explicitRead = result?.steps?.length === 1 && result.steps[0].name === 'get_project' && result.steps[0].status === 'complete';
       const roundtrip = invoked && attempts === 1 && explicitRead && returned && result.reply.includes(nonce);
-      receipt = { ...base, status: roundtrip ? 'verified' : 'incomplete', code: roundtrip ? null : 'TOOL_ROUNDTRIP_NOT_PROVEN', inferenceVerified: returned, toolCallingVerified: roundtrip, durationMs: clock() - started };
+      receipt = { ...base, provider: result.provider || base.provider, model: result.model || base.model,
+        primaryProvider: base.provider, fallback: result.modelContext?.fallback || null,
+        status: roundtrip ? 'verified' : 'incomplete', code: roundtrip ? null : 'TOOL_ROUNDTRIP_NOT_PROVEN', inferenceVerified: returned, toolCallingVerified: roundtrip, durationMs: clock() - started };
     } catch (error) {
       const code = String(error.code || error.error?.code || 'MODEL_REQUEST_FAILED');
       const safeCode = /^[a-zA-Z0-9_-]{1,80}$/.test(code) ? code : 'MODEL_REQUEST_FAILED';

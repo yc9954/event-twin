@@ -16,6 +16,16 @@ const renderTrace = props => renderToStaticMarkup(React.createElement(AgentRunTr
 const project = { inputRevision: 3, space: { confirmed: false }, candidates: [], crm: {} };
 const at = second => `2026-09-28T01:00:0${second}.000Z`;
 
+test('live and saved fallback records clearly identify Claude rather than NVIDIA', () => {
+  const receipt = { from: 'nvidia', to: 'anthropic', model: 'claude-sonnet-4-6', reason: 'MODEL_REQUEST_FAILED', round: 2 };
+  const live = renderTrace({ mode: 'model', events: [sanitizeAgentEvent({ type: 'model.fallback', ...receipt })], active: true });
+  assert.match(live, /NVIDIA → Claude fallback/);
+  const saved = renderTrace({ mode: 'model', modelContext: { inputRevision: 1, fallback: receipt } });
+  assert.match(saved, /Claude fallback 응답/);
+  assert.match(saved, /claude-sonnet-4-6/);
+  assert.match(saved, /완료한 도구는 재실행하지 않았습니다/);
+});
+
 test('real server sanitizer and rendered web trace share the same event contract', () => {
   const stepId = '00000000-1111-2222-3333-444444444444';
   const receipts = [

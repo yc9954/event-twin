@@ -25,7 +25,7 @@ test('owner and map prose stays in a lower-trust data message, never the develop
   assert.equal(request.input[1].role, 'user');
   assert.equal(request.input[1].content.includes(attack), true);
   assert.equal(request.input.at(-1).role, 'user');
-  assert.equal(request.input.at(-1).content[0].text, '현재 상태를 설명해줘');
+  assert.equal(request.input.at(-1).content[0].text, '현재 사용자가 직접 입력한 요청 (앞의 프로젝트 참고자료와 별개):\n현재 상태를 설명해줘');
   assert.equal(JSON.stringify(request).includes('PRIVATE_CONTACT_NAME'), false);
   assert.equal(JSON.stringify(request).includes('PRIVATE_OBSERVATION_NOTES'), false);
   assert.deepEqual(request.tools.map(tool => tool.name), agentTools.map(tool => tool.name));

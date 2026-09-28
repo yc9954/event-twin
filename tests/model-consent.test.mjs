@@ -21,6 +21,9 @@ const envKeys = [
   "NIM_MODEL",
   "NIM_BASE_URL",
   "NIM_API_KEY",
+  "MODEL_FALLBACK_PROVIDER",
+  "ANTHROPIC_API_KEY",
+  "ANTHROPIC_MODEL",
 ];
 function isolatedEnvironment(t, overrides = {}) {
   const previous = Object.fromEntries(
@@ -390,4 +393,28 @@ test("frontend forwards the displayed consent identity for JSON, streaming and e
     ),
   );
   assert.ok(received.every((r) => r.path !== "/api/health"));
+});
+
+test('HTTP requires consent to the fallback recipient and persists actual Claude attribution', async t => {
+  isolatedEnvironment(t, { MODEL_PROVIDER: 'nvidia', NVIDIA_MODEL: 'fixture-primary', NVIDIA_API_KEY: 'fixture-nvidia',
+    MODEL_FALLBACK_PROVIDER: 'anthropic', ANTHROPIC_MODEL: 'claude-sonnet-4-6', ANTHROPIC_API_KEY: 'fixture-claude' });
+  const fallback = { from: 'nvidia', to: 'anthropic', model: 'claude-sonnet-4-6', reason: 'MODEL_REQUEST_FAILED', round: 1 };
+  const app = await fixture(t, { agent: async args => {
+    await args.onEvent?.({ type: 'model.fallback', ...fallback });
+    return { reply: 'Real provider attribution fixture', steps: [], provider: 'anthropic', model: fallback.model, modelContext: { fallback } };
+  } });
+  const body = { message: '읽기 전용 상태 설명', useModel: true, expectedVersion: app.p.version };
+  const old = getModelConfiguration({ ...process.env, MODEL_FALLBACK_PROVIDER: '' }).connectionId;
+  const rejected = await app.post(`/api/projects/${app.p.id}/chat`, { ...body, expectedConnectionId: old });
+  assert.equal(rejected.status, 409);
+  assert.equal(app.calls(), 0);
+  assert.equal(app.health.provider.fallback.configured, true);
+  const response = await app.post(`/api/projects/${app.p.id}/chat`, { ...body, expectedConnectionId: app.health.provider.connectionId }, true);
+  assert.equal(response.data.type, 'response.completed');
+  assert.equal(response.data.committed, true);
+  const saved = app.app.store.get(app.p.id).messages;
+  assert.ok(saved.every(m => m.provider === 'anthropic' && m.connectionId === app.health.provider.connectionId));
+  assert.equal(saved.at(-1).model, fallback.model);
+  assert.deepEqual(saved.at(-1).modelContext.fallback, fallback);
+  assert.equal(JSON.stringify(saved).includes('fixture-claude'), false);
 });

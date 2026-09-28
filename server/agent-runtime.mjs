@@ -20,7 +20,7 @@ export function runtimeDescriptor({ modelConfigured = false, model = 'gpt-6-astr
   };
 }
 
-export function runtimeContext({ useModel = false, modelConfigured = false, provider = 'openai' } = {}) {
+export function runtimeContext({ useModel = false, modelConfigured = false, provider = 'openai', modelConfiguration } = {}) {
   let hook;
   registerRuntimeContext({ on(name, callback) {
     if (name === 'before_prompt_build') hook = callback;
@@ -42,7 +42,7 @@ export function runtimeContext({ useModel = false, modelConfigured = false, prov
       'Read current project state, select only relevant tools, inspect their results and explain actual outcomes. Do not claim a tool ran without a result.',
       'Only the owner may confirm measured dimensions, approve an operating plan, deploy CRM or apply a proposed change. Navigate the owner to review; never simulate approval.',
       'Tool execution events are observable actions, not a hidden chain of thought. Distinguish local rules, model choices, assumptions and measured evidence.',
-      `Configured inference route: ${['openai','nvidia','nim'].includes(provider) ? provider : 'unknown'}. No automatic fallback to another provider or mock responses is allowed.`,
+      `Configured inference route: ${['openai','nvidia','nim','anthropic'].includes(provider) ? provider : 'unknown'}. ${modelConfiguration?.fallback?.configured ? 'The owner consents to NVIDIA first, with an explicitly recorded Claude fallback on eligible model failures. Do not mislabel Claude as NVIDIA. Previously completed tools are not replayed.' : 'No automatic fallback to another provider is configured.'} Mock responses are never allowed.`,
       runtimeLocation.connected
         ? 'This application process runs inside the NemoClaw OpenShell sandbox. Its Linux restrictions were observed at startup. Network access remains subject to the sandbox policy and actual tool results.'
         : 'The NemoClaw context hook is adapted source code. OpenShell isolation, managed inference and host lifecycle are not connected.',

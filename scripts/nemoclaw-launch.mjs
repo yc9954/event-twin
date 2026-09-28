@@ -4,10 +4,13 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { runtimeLocation } from '../server/runtime-location.mjs';
 import { existsSync, readFileSync } from 'node:fs';
+import { parseEnv } from 'node:util';
 
 if (!runtimeLocation.connected) throw new Error('An observed OpenShell sandbox process is required.');
 const cwd = fileURLToPath(new URL('../', import.meta.url));
 const gatewayKeyPath = fileURLToPath(new URL('../.deployment/gateway-key', import.meta.url));
+const fallbackPath = fileURLToPath(new URL('../.env.anthropic', import.meta.url));
+const fallback = existsSync(fallbackPath) ? parseEnv(readFileSync(fallbackPath, 'utf8')) : {};
 const env = {
   ...process.env,
   PORT: '4188',
@@ -16,6 +19,8 @@ const env = {
   NVIDIA_BASE_URL: 'https://inference.local/v1',
   NVIDIA_MODEL: process.env.EVENT_TWIN_MANAGED_MODEL || 'nvidia/nemotron-3-super-120b-a12b',
   NVIDIA_API_KEY: 'openshell-managed',
+  ...Object.fromEntries(['ANTHROPIC_API_KEY', 'ANTHROPIC_MODEL', 'MODEL_FALLBACK_PROVIDER']
+    .filter(key => fallback[key]).map(key => [key, fallback[key]])),
   ...(existsSync(gatewayKeyPath) ? { EVENT_TWIN_GATEWAY_KEY: readFileSync(gatewayKeyPath, 'utf8').trim() } : {}),
   // Keep OpenShell's injected CA; the generic OS bundle does not trust its proxy.
   NODE_EXTRA_CA_CERTS: process.env.NODE_EXTRA_CA_CERTS || '/etc/openshell-tls/openshell-ca.pem',
@@ -24,9 +29,11 @@ delete env.OPENAI_API_KEY;
 delete env.NGC_API_KEY;
 delete env.NIM_API_KEY;
 let stopping = false;
+const natEnv = { ...env };
+delete natEnv.ANTHROPIC_API_KEY;
 const children = [
   spawn(process.execPath, ['server/http.mjs'], { cwd, env, stdio: 'inherit' }),
-  spawn(process.execPath, ['scripts/nvidia-nat.mjs', 'serve'], { cwd, env, stdio: 'inherit' }),
+  spawn(process.execPath, ['scripts/nvidia-nat.mjs', 'serve'], { cwd, env: natEnv, stdio: 'inherit' }),
 ];
 function stop(code) {
   if (stopping) return;

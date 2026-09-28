@@ -19,7 +19,7 @@ flowchart TB
     Access --> Agent["Agent runtime / 8-tool allowlist"]
     Hook["Adapted NemoClaw runtime context"] --> Agent
     Skills["Four business-domain SKILL guides"] --> Agent
-    Agent --> Model["OpenAI-compatible model adapter"]
+    Agent --> Model["Provider router · consent-bound fallback"]
     Model --> Gateway["inference.local / managed inference"]
     Agent --> Domain["Transactional domain actions"]
     Domain --> Experiments["Paired-seed simulation"]
@@ -30,6 +30,7 @@ flowchart TB
     NAT -->|"Read-only HTTP"| HTTP
   end
   Gateway --> Nemotron["NVIDIA Nemotron 3 Super 120B A12B"]
+  Model -.->|"Failure before public output · native SDK"| Claude["Anthropic Claude Sonnet 4.6"]
   HTTP -->|"Public answer deltas / tool receipts"| Proxy
 ```
 
@@ -150,6 +151,18 @@ flowchart LR
 공개 데모는 브라우저별 signed HttpOnly 세션으로 격리한다. 모델 동시 요청은 3개, FIFO 대기는 최대 20초이며 일일 사용량 상한은 아니다. 자원·키·과금 정보는 공개 저장소에서 제외한다.
 
 회귀 테스트는 도메인, HTTP, 실제 SQLite 재시작, 스트림, 소유권, 도구 경계, 이미지 동의, 모델 어댑터, 3D 경로, 온보딩을 검증한다. 실제 NVIDIA 성공 실행은 fixture와 별도로 [검증 기록](VERIFICATION.md)에 남긴다.
+
+### 8.1 가용성 보완: NVIDIA 우선, Claude fallback
+
+`MODEL_FALLBACK_PROVIDER=anthropic`과 별도 키가 설정된 경우에만 전환이 활성화된다. NVIDIA/NIM은 첫 번째 경로이며 Anthropic 네이티브 Messages API가 실패한 라운드를 이어받는다. 별도 GPU를 대여하거나 NVIDIA 키를 Anthropic에 보내지 않는다.
+
+- **동의:** UI는 NVIDIA와 Anthropic 양쪽에 프로젝트 맥락·허용된 대화·도구 결과가 전송될 수 있음을 알린다. 연결 ID에 fallback 설정·모델·키 식별자를 결합하여 이전 NVIDIA 단독 동의를 재사용하지 않는다. 동일한 수신자 조합에 동의한 대화만 후속 맥락으로 전달한다.
+- **전환:** 요청 실패·인증/한도/잔액 오류·잘못된 응답에서만 시도한다. 부분 공개 답변, 모델 거절, 길이 제한, 사용자 취소, 사진 입력의 자동 전송은 전환 대상에서 제외한다. 두 경로 모두 실패하면 실패를 반환하며 가짜 결과를 만들지 않는다.
+- **일관성:** 그 라운드의 입력과 이미 완료된 도구 영수증을 전달하고, 같은 사용자 요청 안에서는 Claude에 고정한다. 에이전트 전체나 완료한 도구를 자동 재시작하지 않는다. 실제 도구 실행은 기존 allowlist·검증·승인·트랜잭션을 그대로 따른다.
+- **표시:** `model.fallback` 이벤트로 원래 제공자·선택 모델·정규화한 오류 코드·라운드를 스트리밍한다. 저장 대화와 연결 검사도 실제 답변한 제공자를 기록한다. Claude 성공을 NVIDIA 추론 성공으로 표시하지 않는다. 비공개 thinking 블록은 UI에 전달하지 않는다.
+- **네트워크:** OpenShell은 앱 Node 바이너리에 한해 `api.anthropic.com:443`의 `POST /v1/messages`와 `GET /v1/models`를 허용한다. 기존 관리형 NVIDIA 경로·인증·TLS 검증은 유지한다. 키는 샌드박스의 비공개 환경 파일에서 앱에만 주입하고 NAT에는 전달하지 않는다.
+
+이는 NVIDIA 제공자 자체의 가용성을 고친 것이 아니라 앱 대화의 실패 경로를 보완한 것이다. [실제 호출과 장애 주입 검증](VERIFICATION.md)을 구분해 기록한다.
 
 ## 9. 다음 확장 단계
 

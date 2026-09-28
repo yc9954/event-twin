@@ -71,7 +71,7 @@ export function normalizeAgentTrace(steps = [], events = []) {
       if (detail.startedAt || type === 'tool_started') row.startedAt = detail.startedAt ?? at;
       if (type !== 'tool_started') row.finishedAt = detail.finishedAt ?? at;
     } else {
-      add({ kind: 'event', key: `event-${sequence}`, type: type || 'event', name: source.type === 'model.awaiting' ? `${detail.round || 1}번째 모델 응답 대기 · 프로젝트 맥락 확인` : source.type === 'response.completed' && source.committed === true ? '요청 저장 완료' : EVENT_LABELS[type] || named(detail.name) || '실행 이벤트', at,
+      add({ kind: 'event', key: `event-${sequence}`, type: type || 'event', name: source.type === 'model.fallback' ? `NVIDIA → Claude fallback · ${detail.model} · ${detail.reason}` : source.type === 'model.awaiting' ? `${detail.round || 1}번째 모델 응답 대기 · 프로젝트 맥락 확인` : source.type === 'response.completed' && source.committed === true ? '요청 저장 완료' : EVENT_LABELS[type] || named(detail.name) || '실행 이벤트', at,
         status: type === 'run_failed' ? 'failed' : type === 'run_completed' ? 'complete' : type === 'run_started' || type === 'model_started' ? 'running' : state(detail.status),
         context: source.type === 'model.awaiting' ? { inputRevision: detail.inputRevision, historyMessages: detail.historyMessages, availableTools: detail.availableTools, selectedImages: detail.selectedImages } : null,
         error: own(detail, 'error') ? textValue(detail.error) || json(detail.error) : undefined });
@@ -126,6 +126,7 @@ export function AgentRunTrace({ steps = [], events = [], active = false, error =
   const unknownCommit = error?.code === 'STREAM_INTERRUPTED' || (own(error, 'committed') && error.committed === null);
   return <section className="agent-run-trace" aria-label="에이전트 실행 기록" aria-busy={active}><header><span><Activity size={15} />실행 맥락 · 도구</span><span className={`agent-run-badge ${unknownCommit ? 'unconfirmed' : status}`}>{unknownCommit ? '저장 여부 미확인' : rolledBack ? '실패 · 미저장' : statusText[status]}</span></header><div className="agent-trace-context"><span>{['local', 'local-direct'].includes(mode) ? '로컬 도구 모드' : '모델 · 도구 모드'}</span><span>{rows.filter(r => r.kind === 'tool').length}개 도구 기록</span></div>
     {modelContext && <div className="agent-model-context">입력 r{modelContext.inputRevision ?? '—'} · 동의된 이전 대화 {modelContext.historyMessages ?? 0}건 · 허용 도구 {modelContext.availableTools ?? 8}개 · 선택 사진 {modelContext.selectedImages ?? 0}장</div>}
+    {modelContext?.fallback && <div className="agent-model-context" role="note"><strong>Claude fallback 응답 · {modelContext.fallback.model}</strong><br />NVIDIA 요청 실패({modelContext.fallback.reason}) → {modelContext.fallback.round}번째 모델 요청에서 전환. 완료한 도구는 재실행하지 않았습니다.</div>}
     {!['local', 'local-direct'].includes(mode) && <p className="agent-reasoning-note">공개된 모델 메시지와 실제 도구 실행만 표시합니다. 비공개 추론 원문은 제공되지 않습니다.</p>}
     {(Array.isArray(modelActivity) ? modelActivity : []).filter(item => Array.isArray(item?.toolNames) && item.toolNames.length && typeof item.text === 'string').map((item, index) => <details className="agent-interim-record" key={`${item.round}-${index}`}><summary>{item.round}번째 모델 중간 메시지 · {item.toolNames.join(', ')}</summary><MarkdownBody text={item.text} /></details>)}
     {rolledBack && <p className="agent-commit-note">이번 요청의 도구 실행과 변경 저장은 다릅니다. 트랜잭션이 실패하여 변경 사항은 저장되지 않았습니다.</p>}

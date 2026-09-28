@@ -6,7 +6,7 @@ const binary = fileURLToPath(new URL('../integrations/nvidia/.venv/bin/nat', imp
 const action = process.argv[2] || 'check';
 const env = { ...process.env, NAT_TELEMETRY_ENABLED: 'false', DO_NOT_TRACK: '1' };
 // This workflow has no model; do not give its process model/provider credentials.
-for (const key of ['OPENAI_API_KEY', 'NVIDIA_API_KEY', 'NGC_API_KEY', 'NIM_API_KEY', 'EVENT_TWIN_GATEWAY_KEY']) delete env[key];
+for (const key of ['OPENAI_API_KEY', 'NVIDIA_API_KEY', 'NGC_API_KEY', 'NIM_API_KEY', 'ANTHROPIC_API_KEY', 'EVENT_TWIN_GATEWAY_KEY']) delete env[key];
 let file = binary, args;
 if (action === 'setup') { file = 'uv'; args = ['sync', '--frozen', '--no-dev']; }
 else {

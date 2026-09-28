@@ -47,7 +47,7 @@ Event Twin은 그 질문을 대화 → 공간 → 실험 → 의사결정 → �
 1. **첫 프로젝트 만들기 → “예, 준비된 비즈니스로 체험할게요”**
    성수 브랜드 체험 매장의 합성 조건, 실제 계산한 16안, 저장된 지도 분석을 나만의 프로젝트로 불러옵니다. 실제 고객 데이터는 없습니다.
 2. **“맥락 전송에 동의하고 에이전트 켜기”**
-   “저장된 조건과 추천안, 다음에 할 일을 설명해줘”라고 질문합니다. Nemotron의 공개 답변과 도구 실행 기록이 스트리밍됩니다.
+   “저장된 조건과 추천안, 다음에 할 일을 설명해줘”라고 질문합니다. 기본 Nemotron의 공개 답변과 도구 실행 기록이 스트리밍됩니다. NVIDIA 호출이 실패하면 사전에 동의한 Claude 경로로 전환하며 실제 제공자와 전환 이유를 표시합니다.
 3. **16개 안 비교 → 상세 공간 → 통과안 승인**
    움직이는 방문객과 공간을 보고 완료율·대기·비용을 비교합니다. 상세 카메라는 방문객 따라가기로 시작합니다.
 4. **CRM 빌드 → 로컬 CRM 배포 → 고객 등록·체크인**
@@ -57,7 +57,7 @@ Event Twin은 그 질문을 대화 → 공간 → 실험 → 의사결정 → �
 
 직접 시작하려면 **“아니오, 내 비즈니스를 직접 입력할게요”**를 선택하세요. 대화 안에서 공간 구조·가로·세로·높이·구역·인력을 선택하거나 채팅으로 초안을 입력한 뒤 확인합니다. 공간 미확인 상태에서 실행을 요청해도 같은 오류를 반복하지 않고 필요한 입력을 안내합니다.
 
-로그인 없이 이용할 수 있고 브라우저별 프로젝트는 분리됩니다. 모델 호출 횟수에 자체 일일 제한은 두지 않았지만 NVIDIA 제공자 한도·잔액·서버 처리량은 적용됩니다. 실제 개인정보는 넣지 마세요. 세션은 8시간이며 필요한 기록은 내보내기로 보관하세요.
+로그인 없이 이용할 수 있고 브라우저별 프로젝트는 분리됩니다. 모델 호출 횟수에 자체 일일 제한은 두지 않았지만 NVIDIA·Anthropic 제공자 한도·잔액·서버 처리량은 적용됩니다. Claude 전환은 Anthropic API 비용이 발생할 수 있습니다. 실제 개인정보는 넣지 마세요. 세션은 8시간이며 필요한 기록은 내보내기로 보관하세요.
 
 ## Product Walkthrough
 
@@ -118,6 +118,7 @@ flowchart TB
     Agent --> NAT
   end
   Inference --> Nemotron["NVIDIA Nemotron · function calling"]
+  Agent -.->|"Consented failure fallback · native Messages API"| Claude["Anthropic Claude Sonnet 4.6"]
   Agent -->|"NDJSON: tool events + answer deltas"| Vercel
 ```
 
@@ -131,6 +132,10 @@ flowchart TB
 | **NeMo Agent Toolkit** | 실제 Python workflow로 저장된 16안의 스키마·제약·순위·입력 버전 검수 | [NAT 통합](integrations/nvidia/README.md), [브리지](server/nat-bridge.mjs) |
 | **Agent Skills** | 목표 근거·공간 실험·CRM 실행·운영 재계획의 4개 도메인 가이드 | [스킬 레지스트리](server/skill-registry.mjs), [skills](skills/) |
 | **NIM serving path** | 자체 GPU 서빙으로 전환 가능한 어댑터·Compose·준비 검사 | [NIM 준비](integrations/nvidia/README.md). 현재 공개 데모는 관리형 추론이며 자체 GPU 서빙은 준비 단계 |
+
+**가용성 보완:** NVIDIA가 기본 추론 경로입니다. 호출 실패 시 **Claude Sonnet 4.6**을 네이티브 Anthropic SDK로 사용할 수 있습니다. 이는 NVIDIA 기술이 아니라 별도 외부 제공자 경로이며, 두 제공자에 대한 맥락 전송 동의를 먼저 받습니다. 전환 배너·실제 모델·도구 기록이 대화에 남습니다. 이미 일부 답변이 표시됐거나 사용자가 취소한 요청은 자동 전환하지 않고, 완료한 도구도 처음부터 재실행하지 않습니다. [설정·보안 경계](docs/DEPLOYMENT.md#선택-claude-가용성-fallback)
+
+![NVIDIA 기본 경로와 Claude fallback 연결 설정](docs/images/07-claude-fallback.png)
 
 ### 왜 이렇게 나눴나요?
 

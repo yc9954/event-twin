@@ -63,11 +63,29 @@ EVENT_TWIN_PUBLIC_URL=https://your-app.vercel.app node scripts/vercel-smoke.mjs
 
 마지막 검사는 **실제 모델 API를 호출**하고 분리된 합성 QA 프로젝트를 만든다. 무료 크레딧·비용·외부 API 제한이 적용될 수 있다. 동의 없이 실제 고객 자료로 실행하지 않는다.
 
+## 선택: Claude 가용성 fallback
+
+기본 NVIDIA/NIM 경로를 유지하면서 Anthropic 네이티브 SDK로 실패한 요청을 이어받는다. 별도 GPU 인스턴스는 필요 없으며 Anthropic API 사용량은 별도 과금된다.
+
+Git에서 제외되는 `.env.anthropic`에 아래 항목을 설정하고 권한을 `600`으로 제한한다. 키를 README·프런트엔드·Vercel의 공개 빌드 변수에 넣지 않는다.
+
+```dotenv
+MODEL_FALLBACK_PROVIDER=anthropic
+ANTHROPIC_MODEL=claude-sonnet-4-6
+ANTHROPIC_API_KEY=<your-private-key>
+```
+
+`npm start`와 NemoClaw 런처가 이 파일을 읽는다. 원격 배포는 `/sandbox/event-twin/.env.anthropic`을 사용하며 소스 배포에 비밀 파일을 포함하지 않는다. NAT 자식 프로세스에는 Anthropic 키를 전달하지 않는다. 변경 후 Event Twin 전용 서비스를 재시작하고 브라우저에서 새 제공자 조합에 다시 동의한다.
+
+OpenShell 네트워크 정책은 앱 프로세스에만 최소 경로를 허용한다. 현재 배포의 추가 규칙 `event-twin-claude`는 `/usr/local/bin/node` 바이너리, `api.anthropic.com:443`, REST `enforce`, `POST /v1/messages`와 `GET /v1/models`이다. 게이트웨이의 기존 정책을 덮어쓰거나 TLS 검증을 끄지 않는다. 사용자의 배포 환경에 맞는 sandbox·gateway 이름을 확인하고 적용한다.
+
+키를 교체하거나 fallback을 끄려면 이 파일의 값을 갱신하고 앱을 재시작한다. 비활성화할 때는 `MODEL_FALLBACK_PROVIDER`를 비운다. UI 동의 식별자도 바뀌므로 기존 단독 제공자 동의가 다른 제공자로 확대되지 않는다. 사진은 현재 Claude fallback으로 전달하지 않는다.
+
 ## 공개 데모의 경계
 
 - 로그인 화면은 없다. 초기 요청에서 서명된 HttpOnly·Secure 익명 쿠키를 만들고 프로젝트를 해당 브라우저 세션에 귀속한다.
 - 사용자 지시에 따라 자체 일일/방문자별 모델 호출 횟수 제한은 없다. 동시 모델 요청 3개와 최대 20초 FIFO 대기, 모델 실행 기한은 과부하 제어이며 사용량 과금 상한은 아니다.
-- NVIDIA 자체 한도와 인스턴스 비용·잔액이 적용된다. 공개 URL의 악의적 사용으로 비용이 발생할 수 있으므로 잔액을 직접 관리하고 심사 종료 후 공개 모드를 끄는 것이 필요하다.
+- NVIDIA·Anthropic 자체 한도와 인스턴스/API 비용·잔액이 적용된다. 공개 URL의 악의적 사용으로 비용이 발생할 수 있으므로 잔액을 직접 관리하고 심사 종료 후 공개 모드를 끄는 것이 필요하다.
 - 쿠키는 8시간 후 만료된다. 계정 복구나 영구 소유권 인증이 아니므로 실제 고객 정보를 저장하지 않는다. 필요한 합성 데모 기록은 내보내기로 보관한다.
 - 공개 배포의 이미지 입력은 2.5MB로 제한한다. 모델로 보내려면 별도의 선택·동의가 필요하고 모델이 이미지를 지원해야 한다.
 - 로컬 4180/원격 4188은 신뢰된 단일 오너용이다. 이 포트를 직접 인터넷에 노출하지 않는다.
