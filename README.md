@@ -158,7 +158,7 @@ npm run build
 npm start
 ```
 
-**http://127.0.0.1:4180**에 접속합니다. 키 없이도 로컬 도구 모드로 실제 시뮬레이션·CRM을 실행할 수 있습니다. NVIDIA hosted 모델은 `.env`에 직접 설정합니다.
+[로컬 앱 열기 — http://127.0.0.1:4180](http://127.0.0.1:4180)에 접속합니다. 키 없이도 로컬 도구 모드로 실제 시뮬레이션·CRM을 실행할 수 있습니다. NVIDIA hosted 모델은 `.env`에 직접 설정합니다.
 
 ```dotenv
 MODEL_PROVIDER=nvidia
