@@ -1,0 +1,31 @@
+# Official model-specific release pin, not :latest. No pull is performed by start.
+# Run on the GPU host, not a Mac Docker VM; accept upstream terms yourself first.
+services:
+  nim:
+    image: nvcr.io/nim/nvidia/nemotron-3.5-lightning-30b-a3b:2.0.9-variant
+    pull_policy: never
+    ports:
+      - "127.0.0.1:8000:8000"
+    shm_size: "16gb"
+    environment:
+      NGC_API_KEY: "${NGC_API_KEY:-}"
+      NIM_MODEL_NAME: "nvidia/nemotron-3.5-lightning-30b-a3b"
+      NIM_SERVED_MODEL_NAME: "nvidia/nemotron-3.5-lightning-30b-a3b"
+      NIM_PASSTHROUGH_ARGS: "--reasoning-parser nemotron_v3 --enable-auto-tool-choice --tool-call-parser qwen3_coder"
+    volumes:
+      - nim-cache:/opt/nim/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8000/v1/health/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 40
+      start_period: 10m
+volumes:
+  nim-cache:

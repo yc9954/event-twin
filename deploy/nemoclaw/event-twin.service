@@ -1,0 +1,14 @@
+[Unit]
+Description=Event Twin inside the NemoClaw OpenShell sandbox
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/openshell -g nemoclaw-18080 sandbox exec --name my-assistant --no-tty --timeout 0 --env EVENT_TWIN_SANDBOX=my-assistant --workdir /sandbox/event-twin -- node /sandbox/event-twin/scripts/nemoclaw-launch.mjs
+ExecStop=/usr/local/bin/openshell -g nemoclaw-18080 sandbox exec --name my-assistant --no-tty --timeout 15 --workdir /sandbox/event-twin -- node scripts/nemoclaw-stop.mjs
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=20
+
+[Install]
+WantedBy=default.target

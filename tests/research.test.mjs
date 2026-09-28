@@ -1,0 +1,42 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {analyzeArea,currentMapContext} from '../server/research.mjs';
+import {normalizeMapResponse} from '../server/map-service.mjs';
+const project={inputRevision:1,brief:{lat:37.5445,lng:127.052},space:{width:24,depth:18,staff:6},assumptions:{visitors:1200,durationMinutes:360,budget:60000000,seed:42,replications:12},crm:{people:[],tasks:[]}};
+test('research reports full, partial and outside coverage for the full analysis radius',()=>{
+  const full=analyzeArea(project);
+  assert.equal(full.coverage.status,'full');
+  assert.equal(full.tools.find(t=>t.id==='market').status,'complete');
+  const partial=analyzeArea({...project,brief:{lat:37.5445,lng:127.0361}});
+  assert.equal(partial.inBounds,true);assert.equal(partial.coverage.status,'partial');
+  for(const id of ['market','places','access'])assert.equal(partial.tools.find(t=>t.id===id).status,'limited');
+  assert.match(partial.tools.find(t=>t.id==='market').summary,/전체 수가 아닙니다/);
+  const outside=analyzeArea({...project,brief:{lat:37.5665,lng:126.978}});
+  assert.equal(outside.inBounds,false);assert.equal(outside.coverage.status,'outside');
+  assert.equal(outside.tools.find(t=>t.id==='access').status,'limited');
+  assert.match(outside.tools.find(t=>t.id==='access').summary,/수집된 역 중/);
+});
+test('research distinguishes actual bundled snapshot from an on-demand collected response',()=>{
+  const snapshot=analyzeArea(project);
+  assert.equal(snapshot.source.mode,'bundled-snapshot');
+  assert.equal(snapshot.source.collectedAt,'2026-09-25T18:12:56.680Z');
+  assert.match(snapshot.tools[0].basis,/현재 네트워크 조회 아님/);
+  const mapContext=normalizeMapResponse({osm3s:{timestamp_osm_base:'2026-09-28T02:27:15Z'},elements:[{type:'node',id:1,lat:37.5445,lon:127.052,tags:{amenity:'cafe',name:'수집된 실제 카페'}}]}, {latitude:37.5445,longitude:127.052,radiusMeters:250},'2026-09-28T02:28:28.249Z');
+  const actual=analyzeArea({...project,mapContext});
+  assert.equal(actual.source.mode,'overpass-query');
+  assert.equal(actual.source.querySha256,mapContext.source.querySha256);
+  assert.equal(actual.radius,250);
+  assert.equal(actual.facilities[0].name,'수집된 실제 카페');
+  assert.equal(actual.coverage.realWorldComplete,false);
+  assert.equal(actual.tools.find(t=>t.id==='audience').status,'assumption');
+  assert.equal(actual.tools.find(t=>t.id==='budget').status,'assumption');
+  assert.equal(actual.tools.find(t=>t.id==='access').status,'limited');
+  assert.match(actual.tools.find(t=>t.id==='access').summary,/실제 역의 부재를 뜻하지 않습니다/);
+  assert.doesNotMatch(actual.tools.find(t=>t.id==='access').summary,/· 0m/);
+  assert.equal(analyzeArea({...project,mapContext,brief:{lat:37.5,lng:127.05}}).source.mode,'bundled-snapshot');
+});
+test('malformed or stale context cannot be treated as data for the current coordinate',()=>{
+  const context=normalizeMapResponse({osm3s:{timestamp_osm_base:'2026-09-28T02:27:15Z'},elements:[]},{latitude:37.5445,longitude:127.052,radiusMeters:500},'2026-09-28T02:28:28.249Z');
+  assert.equal(currentMapContext({...project,mapContext:context}),context);
+  for(const patch of [{coordinate:[]},{coordinate:[NaN,37.5445]},{coordinate:[127.051,37.5445]},{collectedAt:'invalid'},{radiusMeters:5000}])assert.equal(currentMapContext({...project,mapContext:{...context,...patch}}),null);
+});

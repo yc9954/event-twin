@@ -1,0 +1,54 @@
+/* A larger live view, without changing the storyboard's compact navigation. */
+.modal.wide.scene-detail-modal { max-width: 1280px; }
+.scene-player { margin: 0 0 24px; }
+.scene-player-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 23px; background: #202223; color: #f5f6f7; }
+.scene-player-toolbar button { border: 1px solid #4b5155; border-radius: 4px; padding: 8px 12px; background: #2b2e30; color: #edf0f2; font-size: 12px; cursor: pointer; }
+.scene-player-toolbar button.active, .scene-player-toolbar button[aria-pressed="true"] { color: #172200; border-color: #76b900; background: #a4d857; }
+.scene-player-toolbar button:disabled { opacity: .5; cursor: default; }
+.scene-player-views, .scene-player-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.scene-player-stage.detail-scene { position: relative; width: 100%; height: auto; min-height: 360px; aspect-ratio: 16 / 9; background: #e7eaec; }
+.scene-player-stage > .scene-view { position: absolute !important; inset: 0; }
+.scene-player-stage > .scene-player-overlay { position: absolute; inset: auto 16px 16px; width: auto; height: auto; display: flex; justify-content: space-between; gap: 10px; pointer-events: none; }
+.scene-player-overlay span { border-radius: 4px; background: #202427df; padding: 6px 10px; color: #f4f7ef; font-size: 12px; }
+.scene-player-recording { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 23px; border-bottom: 1px solid #e0e5e8; }
+.scene-player-record-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.scene-record-button { border: 0; border-radius: 4px; background: #76b900; color: #142000; padding: 9px 14px; font-weight: 600; cursor: pointer; }
+.scene-record-button.recording { background: #242728; color: #fff; }
+.scene-record-button:disabled { opacity: .55; cursor: default; }
+.scene-download-link { color: #4c7705; font-size: 12px; font-weight: 600; }
+.scene-record-status { margin: 0; color: #6b7780; font-size: 11px; }
+.scene-record-error { margin: 0; color: #a4432c; font-size: 12px; }
+.scene-player-status { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 12px 23px; font-size: 12px; font-variant-numeric: tabular-nums; color: #56616b; border-bottom: 1px solid #e0e5e8; }
+.scene-player-status a { color: #426c00; font-weight: 600; }
+.scene-player-note, .scene-player-error { margin: 12px 23px 0; font-size: 12px; line-height: 1.7; color: #6f7b83; }
+.scene-player-error { color: #a4432c; }
+.scene-player-disclaimer { margin: 0; padding: 11px 23px; line-height: 1.55; font-size: 11px; color: #76828a; }
+.demo-recorder { font-size: 11px; padding: 8px 0; border-bottom: 1px solid #383b3f; }
+.demo-recorder-trigger { display: flex; width: 100%; gap: 10px; align-items: center; border: 0; background: transparent; padding: 10px 12px; color: #dce4e9; text-align: left; cursor: pointer; }
+.demo-recorder-trigger:hover { background: #34383a; }
+.demo-recorder-live-dot { color: #a5d95b; fill: #a5d95b; }
+.demo-recorder-panel { position: fixed; z-index: 100; right: 20px; bottom: 20px; width: min(430px, calc(100vw - 40px)); max-height: min(75vh, 650px); overflow: auto; border: 1px solid #41484a; border-radius: 8px; background: #202324; box-shadow: 0 16px 55px #12171670; padding: 18px; color: #eef1f2; font-size: 12px; }
+.demo-recorder-panel > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid #42494b; }
+.demo-recorder-panel h3 { font-size: 17px; margin: 4px 0 0; color: #fff; }
+.demo-recorder-panel small { color: #a8d56a; letter-spacing: .08em; }
+.demo-recorder-close { border: 0; background: transparent; color: #c6ced1; cursor: pointer; }
+.demo-recorder-disclosure, .demo-recorder-note { color: #c6ced1; line-height: 1.6; margin: 13px 0; }
+.demo-recorder-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 14px 0; }
+.demo-recorder-stats > div { border: 1px solid #485050; border-radius: 4px; padding: 9px; }
+.demo-recorder-stats dt { color: #aab5b6; font-size: 10px; }
+.demo-recorder-stats dd { margin: 4px 0 0; color: #f5f7f7; font-variant-numeric: tabular-nums; }
+.demo-recorder-actions { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.demo-recorder-actions .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 11px; font-size: 11px; text-decoration: none; }
+.demo-recorder-error { display: flex; gap: 8px; color: #ffc1ae; line-height: 1.5; }
+.demo-recorder p { color: #bfc7ce; line-height: 1.5; margin: 6px 8px; }
+.demo-recorder a { color: #a4d857; display: inline-block; padding: 8px; }
+.demo-recorder-status { display: flex; flex-wrap: wrap; gap: 5px; font-variant-numeric: tabular-nums; }
+.demo-recorder-active { border-left: 2px solid #76b900; padding-left: 5px; }
+@media (max-width: 750px) {
+  .scene-player-toolbar { padding: 12px 14px; }
+  .scene-player-toolbar button { padding: 7px 9px; font-size: 11px; }
+  .scene-player-status { padding: 10px 14px; }
+  .scene-player-stage.detail-scene { min-height: 0; }
+  .scene-player-recording { padding: 12px 14px; align-items: flex-start; flex-direction: column; }
+  .scene-player-note, .scene-player-error { margin-left: 14px; margin-right: 14px; }
+}

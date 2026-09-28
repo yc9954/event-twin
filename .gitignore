@@ -1,0 +1,27 @@
+node_modules/
+dist/
+data/*
+!data/.gitkeep
+.env
+.env.*
+!.env.example
+.deployment/
+.vercel/
+*.log
+integrations/nvidia/.venv/
+**/__pycache__/
+**/*.egg-info/
+.vercel
+# Private development evidence, account/billing notes and old screenshots.
+/*.png
+/*-visual-verdict.json
+/NVIDIA-COSTS.md
+/QA.md
+/deploy/nemoclaw/connection-approval.png
+/deploy/nemoclaw/README.md
+/integrations/nvidia/*-evidence.json
+.DS_Store
+*.pem
+*.key
+*.sqlite*
+*.db

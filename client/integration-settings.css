@@ -1,0 +1,107 @@
+.integration-settings {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  color: #374151;
+  font-size: 13px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.modal > .integration-settings { padding: 23px; }
+.integration-settings > * { min-width: 0; }
+.integration-settings .integration-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 12px;
+  flex-wrap: wrap;
+}
+.integration-settings .integration-heading strong { color: #557523; font-size: 12px; }
+.integration-settings dl {
+  margin: 0;
+  border: 1px solid #e1e5e8;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.integration-settings dl > div {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  padding: 12px 14px;
+  gap: 12px;
+  border-bottom: 1px solid #e9ecef;
+}
+.integration-settings dl > div:last-child { border-bottom: 0; }
+.integration-settings dd { margin: 0; }
+.integration-settings dt { color: #6b7280; }
+.integration-settings p, .integration-settings h3 { margin: 0; }
+.integration-settings h3 { font-size: 14px; line-height: 1.5; }
+.integration-settings ul { margin: 0; padding-left: 18px; }
+.integration-settings li + li { margin-top: 8px; }
+.integration-settings code { font-size: 11px; }
+.integration-settings .integration-warning {
+  padding: 12px 14px;
+  background: #fff8e8;
+  border: 1px solid #ead4a0;
+  border-radius: 4px;
+}
+.integration-settings .integration-test {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+  background: #f7f9fa;
+  border: 1px solid #dce2e7;
+  border-radius: 4px;
+}
+.integration-settings .integration-test > * { min-width: 0; }
+.integration-settings .integration-test label {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  cursor: pointer;
+}
+.integration-settings .integration-test input[type="checkbox"] {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin: 3px 0 0;
+  accent-color: #76b900;
+}
+.integration-settings .integration-test button {
+  justify-self: start;
+  max-width: 100%;
+  min-height: 40px;
+  border: 0;
+  background: #76b900;
+  color: #182403;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.integration-settings .integration-test button:disabled { opacity: .45; cursor: not-allowed; }
+.integration-settings .integration-test button:focus-visible,
+.integration-settings .integration-test input:focus-visible {
+  outline: 2px solid #557523;
+  outline-offset: 3px;
+}
+.integration-settings .integration-receipt {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  background: #fff4e7;
+  border-left: 3px solid #b67a28;
+}
+.integration-settings .integration-receipt.verified { background: #f1f6e9; border-color: #76b900; }
+.integration-settings .integration-receipt span { font-size: 12px; }
+.integration-settings .integration-notes { display: grid; gap: 12px; }
+.integration-settings .integration-notes .help { padding-top: 2px; }
+
+@media (max-width: 760px) {
+  .modal > .integration-settings { padding: 18px; }
+  .integration-settings { gap: 16px; }
+  .integration-settings .integration-test { padding: 14px; gap: 12px; }
+  .integration-settings dl > div { grid-template-columns: 76px minmax(0, 1fr); padding: 12px; gap: 10px; }
+}

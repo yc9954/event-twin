@@ -1,0 +1,15 @@
+general:
+  front_end:
+    _type: fastapi
+    host: "127.0.0.1"
+    port: 8008
+    runner_class: "event_twin_nat.worker.LocalReadOnlyWorker"
+    cors:
+      allow_origins: []
+      allow_methods: []
+      allow_headers: []
+      allow_credentials: false
+workflow:
+  _type: event_twin_readonly
+  app_base_url: "${EVENT_TWIN_APP_URL:-http://127.0.0.1:4180}"
+  timeout_seconds: 5

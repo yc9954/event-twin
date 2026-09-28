@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "event-twin-nat-bridge"
+version = "0.1.0"
+description = "Read-only Event Twin workflow for NVIDIA NeMo Agent Toolkit"
+requires-python = ">=3.11,<3.14"
+# NAT 1.9.0 imports these optional modules when discovering built-in tools/serve.
+# Pin the narrow dependencies rather than the much larger [all] installation.
+dependencies = ["nvidia-nat==1.9.0", "langchain-core==1.6.5", "sqlalchemy[asyncio]==2.1.1"]
+
+[project.entry-points."nat.components"]
+event_twin = "event_twin_nat.register"
+
+[tool.setuptools.packages.find]
+where = ["src"]

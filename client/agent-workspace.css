@@ -1,0 +1,121 @@
+/* The app shell stays at the storyboard's 214/185px. Only the Brief work area
+   changes: conversation is the primary surface, execution evidence is adjacent. */
+.brief-page.agent-mode .page-heading { margin-bottom: 14px; }
+.brief-page.agent-mode .page-heading h1 { font-size: 24px; }
+.brief-page.agent-mode .page-heading p { font-size: 12px; color: #77818d; }
+.brief-page.agent-mode .brief-project-context { margin-bottom: 14px; }
+.brief-page.agent-mode .brief-workspace { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; }
+.brief-page.agent-mode .chat-panel,
+.brief-page.agent-mode .brief-artifact { height: calc(100dvh - 252px); min-height: 590px; max-height: 1080px; }
+.brief-page.agent-mode .chat-panel { overflow: hidden; }
+.brief-page.agent-mode .chat-title { min-height: 56px; padding: 14px 18px; font-size: 13px; }
+.brief-page.agent-mode .chat-title > span { flex-wrap: wrap; gap: 8px; }
+.brief-page.agent-mode .chat-title small { font: 9px ui-monospace, monospace; color: #8a929b; margin-left: 2px; letter-spacing: .04em; }
+.brief-page.agent-mode .chat-title svg { color: #608b26; }
+.brief-page.agent-mode .chat-title .badge { font-size: 10px; padding: 4px 6px; white-space: nowrap; }
+.agent-session-strip { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; padding: 9px 18px; background: #f8faf6; border-bottom: 1px solid #e4e9de; color: #74816a; font-size: 10px; }
+.agent-session-strip > span { display: inline-flex; align-items: center; gap: 6px; }
+.agent-session-strip > span:last-child { margin-left: auto; font: 9px ui-monospace, monospace; }
+.agent-session-strip i { width: 5px; height: 5px; border-radius: 50%; background: #85a461; }
+.agent-session-strip i.working { background: #76b900; box-shadow: 0 0 0 3px #76b90022; }
+.brief-page.agent-mode .chat-history { padding: 24px 20px; min-height: 96px; background: #fbfcfd; }
+.brief-page.agent-mode .chat-intro { padding: 14px 14px 6px; text-align: left; }
+.brief-page.agent-mode .chat-intro .agent-avatar { margin: 0 0 20px; width: 36px; height: 36px; border-radius: 6px; background: #eef6e2; color: #658b2c; }
+.brief-page.agent-mode .chat-intro > .eyebrow { font-size: 9px; color: #8a969f; letter-spacing: .08em; }
+.brief-page.agent-mode .chat-intro h2 { margin: 14px 0; font-size: 27px; font-weight: 500; line-height: 1.5; letter-spacing: -.8px; color: #35434d; }
+.brief-page.agent-mode .chat-intro p { margin: 0; font-size: 12px; line-height: 1.9; color: #7f8a93; }
+.brief-page.agent-mode .prompt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 26px; }
+.brief-page.agent-mode .prompt-grid button { padding: 12px; font-size: 11px; min-height: 44px; background: #fff; }
+.brief-page.agent-mode .message { gap: 11px; margin-bottom: 28px; }
+.brief-page.agent-mode .message-avatar { width: 26px; height: 26px; }
+.brief-page.agent-mode .message-meta { font-size: 11px; gap: 8px; margin: 5px 0 11px; }
+.brief-page.agent-mode .message-meta small { font-size: 9px; }
+.brief-page.agent-mode .message-text { font-size: 12px; line-height: 1.95; }
+.brief-page.agent-mode .user .message-text { background: #f0f3f5; border: 0; padding: 13px 14px; }
+.brief-page.agent-mode .assistant .message-text.markdown-message { margin-top: 12px; padding: 14px 16px; background: #fff; border: 1px solid #dfe7d5; border-left: 3px solid #76b900; border-radius: 4px; white-space: normal; }
+.brief-page.agent-mode .assistant .message-text.markdown-message.live-answer { margin-top: 12px; min-height: 57px; }
+.brief-page.agent-mode .assistant .message-text.markdown-message.uncommitted { border-color: #e6d4b8; border-left-color: #ad8952; }
+.markdown-body { min-width: 0; color: #56616e; line-height: 1.8; overflow-wrap: anywhere; }
+.markdown-body > :first-child { margin-top: 0; }
+.markdown-body > :last-child { margin-bottom: 0; }
+.markdown-body p, .markdown-body ul, .markdown-body ol, .markdown-body blockquote, .markdown-body pre, .markdown-body table { margin: 0 0 12px; }
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 { margin: 18px 0 8px; color: #34414c; line-height: 1.45; font-weight: 700; }
+.markdown-body h1 { font-size: 16px; }
+.markdown-body h2 { font-size: 14px; }
+.markdown-body h3, .markdown-body h4 { font-size: 12px; }
+.markdown-body ul, .markdown-body ol { padding-left: 1.45em; }
+.markdown-body li { padding-left: 2px; }
+.markdown-body li + li { margin-top: 4px; }
+.markdown-body li > p { margin-bottom: 4px; }
+.markdown-body strong { color: #34414c; font-weight: 700; }
+.markdown-body a { color: #547f19; text-decoration: underline; text-underline-offset: 2px; }
+.markdown-body code { padding: 1px 4px; background: #f1f4ee; border-radius: 3px; font: .94em ui-monospace, SFMono-Regular, Menlo, monospace; }
+.markdown-body pre { overflow: auto; max-width: 100%; padding: 10px 12px; background: #f4f6f7; border: 1px solid #e5e9ed; border-radius: 4px; }
+.markdown-body pre code { padding: 0; background: none; }
+.markdown-body blockquote { padding: 3px 0 3px 12px; border-left: 3px solid #a4c878; color: #687782; }
+.markdown-body table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+.markdown-body th, .markdown-body td { padding: 6px 9px; border: 1px solid #dfe5e9; text-align: left; }
+.markdown-body th { background: #f4f7f0; color: #465947; }
+.markdown-body hr { border: 0; border-top: 1px solid #e4e9ec; margin: 14px 0; }
+.space-view-controls { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
+.space-view-controls .btn { font-size: 10px; padding: 7px 9px; white-space: nowrap; }
+.brief-page.agent-mode .submitted-request { font-size: 12px; color: #5a6572; line-height: 1.8; margin-bottom: 12px; overflow-wrap: anywhere; }
+.brief-page.agent-mode .pending-user .message-meta small { color: #8d9a8a; }
+.brief-page.agent-mode .live-answer { margin-top: 12px; padding: 13px 15px; background: #fff; border: 1px solid #dfe7d5; border-left: 3px solid #76b900; border-radius: 4px; min-height: 57px; }
+.brief-page.agent-mode .live-answer.uncommitted { border-color: #e6d4b8; border-left-color: #ad8952; }
+.brief-page.agent-mode .live-answer > small { display: block; margin-bottom: 7px; color: #688346; font-size: 10px; }
+.brief-page.agent-mode .live-answer.uncommitted > small { color: #9b712f; }
+.brief-page.agent-mode .interim-model-output p { overflow-wrap: anywhere; }
+.brief-page.agent-mode .interim-model-output { margin-bottom: 8px; padding: 8px 10px; background: #f7f9f6; border: 1px solid #e5ebdf; border-radius: 3px; font-size: 11px; }
+.brief-page.agent-mode .interim-model-output summary { cursor: pointer; color: #798774; }
+.brief-page.agent-mode .interim-model-output p { margin-top: 8px; }
+.brief-page.agent-mode .composer { padding: 16px; min-height: 0; flex: 0 1 auto; overflow-y: auto; overscroll-behavior: contain; }
+.brief-page.agent-mode .composer textarea { min-height: 96px; padding: 12px; font-size: 12px; line-height: 1.7; background: #fff; }
+.brief-page.agent-mode .composer-actions { margin-top: 10px; gap: 12px; }
+.brief-page.agent-mode .composer-actions > div { gap: 12px; }
+.brief-page.agent-mode .composer-actions .btn { padding: 9px 14px; }
+.brief-page.agent-mode .composer .check-row { font-size: 11px; }
+.brief-page.agent-mode .composer-disclosure { margin: 10px 0 0; padding: 9px 10px; border: 1px solid #e1e9d8; border-radius: 4px; background: #f8faf5; color: #5d6d57; font-size: 10px; line-height: 1.7; overflow-wrap: anywhere; }
+.brief-page.agent-mode .composer-actions > div { min-width: 0; flex-wrap: wrap; }
+.brief-page.agent-mode .composer-note { font-size: 9px; margin-top: 10px; color: #89949e; }
+.brief-page.agent-mode .brief-result-header { padding: 13px 16px; min-height: 56px; }
+.brief-page.agent-mode .brief-result-header small { font-size: 8px; }
+.brief-page.agent-mode .brief-result-header h2 { margin-top: 5px; font-size: 13px; }
+.brief-page.agent-mode .brief-result-switch { padding: 0 16px; }
+.brief-page.agent-mode .brief-result-switch > div { gap: 20px; }
+.brief-page.agent-mode .brief-result-switch button { font-size: 11px; padding-block: 12px 10px; }
+.brief-page.agent-mode .brief-next-actions .next-action { padding: 14px 9px; gap: 6px; }
+.brief-page.agent-mode .brief-next-actions .next-action > span { font-size: 10px; }
+.brief-page.agent-mode .brief-next-actions .next-action > svg:last-child { display: none; }
+.brief-page.agent-mode .brief-evidence-warning { font-size: 9px; padding: 11px 14px; }
+.agent-map-action { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #e7ebee; }
+.agent-map-action > span { font-size: 10px; color: #8a939c; }
+.agent-map-action .btn { font-size: 10px; padding: 8px 9px; }
+.brief-page.agent-mode .brief-research-view { padding: 8px; }
+.brief-page.agent-mode .brief-map-evidence { grid-template-columns: 1fr; }
+.brief-page.agent-mode .brief-map-evidence > div + div { border-left: 0; border-top: 1px solid #e6e9ec; }
+@media (max-width: 1100px) {
+  .brief-page.agent-mode .brief-workspace { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 12px; }
+  .brief-page.agent-mode .chat-title small { display: none; }
+  .brief-page.agent-mode .chat-history { padding: 20px 14px; }
+  .brief-page.agent-mode .chat-intro { padding-inline: 6px; }
+  .brief-page.agent-mode .chat-intro h2 { font-size: 23px; }
+  .brief-page.agent-mode .prompt-grid { grid-template-columns: minmax(0, 1fr); }
+  .brief-page.agent-mode .brief-next-actions .next-action > svg { display: none; }
+}
+@media (max-width: 900px) {
+  .brief-page.agent-mode .brief-workspace { grid-template-columns: minmax(0, 1fr); }
+  .brief-page.agent-mode .chat-panel { height: 650px; min-height: 550px; }
+  .brief-page.agent-mode .brief-artifact { height: auto; max-height: none; min-height: 0; }
+  .brief-page.agent-mode .prompt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .brief-page.agent-mode .brief-artifact-content { overflow: visible; }
+}
+@media (max-width: 520px) {
+  .brief-page.agent-mode .page-heading { flex-direction: column; }
+  .brief-page.agent-mode .page-heading h1 { font-size: 21px; }
+  .brief-page.agent-mode .message-meta { align-items: flex-start; flex-direction: column; }
+  .brief-page.agent-mode .chat-title { padding-inline: 13px; }
+  .agent-session-strip { padding-inline: 13px; gap: 10px; }
+  .brief-page.agent-mode .chat-intro { padding-inline: 0; }
+  .brief-page.agent-mode .prompt-grid button { padding: 10px; font-size: 10px; }
+}

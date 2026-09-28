@@ -1,0 +1,16 @@
+.env*
+.deployment
+data
+integrations
+node_modules
+tests
+work
+*.png
+*.webm
+*.mp4
+*.log
+scripts
+server
+.uv
+**/__pycache__
+**/*.egg-info

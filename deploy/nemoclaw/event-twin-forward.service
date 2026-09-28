@@ -1,0 +1,13 @@
+[Unit]
+Description=Private Event Twin port from OpenShell to Brev host
+After=event-twin.service
+Requires=event-twin.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/openshell -g nemoclaw-18080 forward service my-assistant --target-port 4188 --local 127.0.0.1:4188
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

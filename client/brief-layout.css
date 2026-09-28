@@ -1,0 +1,132 @@
+/* NeMo v14 composition: compact agent conversation, large evidence surface.
+   Scope every override to Brief so the shared shell remains independently owned. */
+.brief-page { min-width: 0; }
+.workspace-content:has(> .brief-page) { padding: 22px 24px 16px; }
+.brief-page .page-heading { align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.brief-page .page-heading .eyebrow { font-size: 10px; letter-spacing: .06em; margin-bottom: 8px; }
+.brief-page .page-heading h1 { font-size: 25px; font-weight: 600; letter-spacing: -.7px; line-height: 1.4; }
+.brief-page .page-heading p { margin-top: 4px; font-size: 11px; }
+/* BriefForm is itself the panel, not a form nested inside .panel. */
+.brief-page .panel.brief-form { padding: 19px; }
+.brief-page .brief-form > .form-grid { gap: 16px 18px; align-items: start; }
+.brief-page .brief-form .field { margin: 0; gap: 8px; }
+.brief-page .brief-form .field input,
+.brief-page .brief-form .field textarea { width: 100%; }
+.brief-page .brief-form > .form-actions { margin-top: 18px; gap: 10px; flex-wrap: wrap; }
+.brief-page .brief-project-context { margin: 0 0 15px; border: 1px solid #dce1e5; border-radius: 4px; background: #fff; }
+.brief-page .brief-project-context > summary { display: flex; align-items: center; gap: 8px; padding: 10px 12px; list-style: none; cursor: pointer; font-size: 11px; color: #6b7582; }
+.brief-page .brief-project-context > summary::-webkit-details-marker { display: none; }
+.brief-page .brief-project-context summary strong { font-weight: 500; color: #485460; white-space: nowrap; }
+.brief-page .brief-project-context summary > span { margin-left: auto; text-align: right; }
+.brief-page .brief-project-context summary > svg { flex: none; }
+.brief-page .brief-project-context[open] summary > svg:last-child { transform: rotate(180deg); }
+.brief-page .brief-project-context > div { display: flex; flex-wrap: wrap; gap: 12px 20px; padding: 2px 14px 14px; color: #6b7683; font-size: 11px; line-height: 1.8; }
+.brief-page .brief-project-context p { width: 100%; font-size: 12px; }
+.brief-page .brief-project-context div > span { display: inline-flex; align-items: center; gap: 7px; }
+.brief-page .brief-workspace { display: grid; grid-template-columns: 310px minmax(0, 1fr); gap: 14px; align-items: stretch; }
+.brief-workspace .chat-panel,
+.brief-workspace .brief-artifact { height: calc(100dvh - 263px); min-height: 520px; max-height: 880px; border: 1px solid #d8dee3; border-radius: 4px; background: #fff; min-width: 0; }
+.brief-workspace .chat-title { padding: 13px 11px; font-size: 11px; gap: 7px; }
+.brief-workspace .chat-title > span { gap: 6px; }
+.brief-workspace .chat-title .badge { font-size: 9px; padding: 3px 4px; }
+.brief-workspace .chat-history { padding: 15px 12px; min-height: 150px; max-height: none; }
+.brief-workspace .chat-intro { padding: 17px 1px; }
+.brief-workspace .chat-intro .agent-avatar { width: 32px; height: 32px; margin-bottom: 16px; }
+.brief-workspace .chat-intro h2 { font-size: 17px; line-height: 1.55; margin-bottom: 12px; word-break: keep-all; }
+.brief-workspace .chat-intro p { font-size: 11px; line-height: 1.8; color: #7b8591; }
+.brief-workspace .prompt-grid { grid-template-columns: minmax(0, 1fr); gap: 6px; margin-top: 20px; }
+.brief-workspace .prompt-grid button { padding: 10px; font-size: 11px; }
+.brief-workspace .message { gap: 7px; margin-bottom: 22px; }
+.brief-workspace .message-avatar { width: 22px; height: 22px; font-size: 9px; }
+.brief-workspace .message-avatar svg { width: 15px; height: 15px; }
+.brief-workspace .message-meta { flex-wrap: wrap; gap: 5px; font-size: 10px; }
+.brief-workspace .message-meta small { font-size: 9px; }
+.brief-workspace .message-text { font-size: 12px; line-height: 1.8; }
+.brief-workspace .user .message-text { padding: 9px; }
+.brief-workspace .trace summary { padding: 9px 7px; gap: 5px; font-size: 10px; flex-wrap: wrap; overflow-wrap: anywhere; }
+.brief-workspace .trace summary > span { font-size: 9px; }
+.brief-workspace .trace > div { padding: 0 5px 6px; }
+.brief-workspace .trace pre { padding: 8px; font-size: 10px; }
+.brief-workspace .composer { padding: 11px 10px; flex: none; }
+.brief-workspace .composer textarea { min-height: 94px; font-size: 12px; padding: 10px; }
+.brief-workspace .composer-actions { gap: 6px; }
+.brief-workspace .composer-actions > div { gap: 5px; }
+.brief-workspace .composer-actions .btn { padding: 8px 10px; }
+.brief-workspace .composer .check-row { font-size: 10px; gap: 6px; }
+.brief-workspace .composer-note { font-size: 9px; line-height: 1.6; color: #8a949f; }
+.brief-workspace .attachment-picker { font-size: 10px; }
+.brief-workspace .attachment-list { grid-template-columns: minmax(0, 1fr); max-height: 155px; overflow-y: auto; }
+.brief-workspace .attachment-list span { font-size: 10px; }
+.brief-workspace .brief-artifact { display: flex; flex-direction: column; overflow: hidden; }
+.brief-page .brief-result-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 17px; }
+.brief-page .brief-result-header small { font: 9px ui-monospace, monospace; letter-spacing: .06em; color: #8b959f; }
+.brief-page .brief-result-header h2 { display: flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 600; margin-top: 6px; color: #414d59; }
+.brief-page .brief-result-header h2 svg { color: #76a33b; }
+.brief-page .brief-result-header .btn { font-size: 11px; }
+.brief-page .brief-result-switch { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-block: 1px solid #e4e8eb; padding: 0 15px; flex-wrap: wrap; }
+.brief-page .brief-result-switch > div { display: flex; gap: 14px; }
+.brief-page .brief-result-switch button { padding: 11px 2px 9px; border: 0; border-bottom: 2px solid transparent; color: #858e99; font-size: 11px; background: transparent; }
+.brief-page .brief-result-switch button[aria-selected=true] { border-bottom-color: #76b900; color: #4e701f; }
+.brief-page .brief-result-switch > span { font-size: 10px; color: #929aa3; padding: 8px 0; }
+.brief-page .brief-artifact-content { flex: 1; min-height: 0; overflow: auto; }
+.brief-page .brief-artifact-view[hidden] { display: none; }
+.brief-page .brief-artifact .map-topline { padding: 13px 16px; }
+.brief-page .brief-artifact .map-topline h3 { font-size: 14px; }
+.brief-page .brief-artifact .map-topline > span { font-size: 10px; }
+.brief-page .brief-artifact .map-note { font-size: 10px; line-height: 1.7; }
+.brief-page .brief-map-location { display: flex; align-items: flex-start; gap: 7px; padding: 3px 16px 13px; color: #848e98; font-size: 10px; line-height: 1.6; }
+.brief-page .brief-map-location svg { flex: none; margin-top: 1px; }
+.brief-page .brief-map-evidence { display: grid; grid-template-columns: 1fr 1.6fr; border-top: 1px solid #e6e9ec; }
+.brief-page .brief-map-evidence > div { padding: 13px 16px; min-width: 0; }
+.brief-page .brief-map-evidence > div + div { border-left: 1px solid #e6e9ec; }
+.brief-page .brief-map-evidence small { display: block; font-size: 10px; color: #909aa5; margin-bottom: 7px; }
+.brief-page .brief-map-evidence strong { display: block; font-size: 15px; line-height: 1.5; font-weight: 500; color: #465565; }
+.brief-page .brief-result-note { padding: 0 16px 16px; color: #8a939f; font-size: 11px; line-height: 1.8; }
+.brief-page .brief-research-view { padding: 16px 20px; }
+.brief-page .brief-research-view .research-summary { font-size: 10px; }
+.brief-page .brief-research-view .research-tool header h3 { font-size: 12px; }
+.brief-page .brief-research-view .research-tool > small { font-size: 10px; }
+.brief-page .brief-research-view details > summary { font-size: 10px !important; cursor: pointer; line-height: 1.8; }
+.brief-page .brief-research-view .research-results > details { padding: 11px 0; border-top: 1px solid #e5e9ed; }
+.brief-page .brief-research-view .research-results > details p { font-size: 11px; line-height: 1.8; margin-top: 7px; }
+.brief-page .brief-research-view pre { margin-top: 9px; font-size: 10px; }
+.brief-page .brief-next-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #e0e5e8; flex: none; }
+.brief-page .brief-next-actions .next-action { padding: 12px 10px; gap: 7px; min-width: 0; }
+.brief-page .brief-next-actions .next-action + .next-action { border-left: 1px solid #e8ecef; }
+.brief-page .brief-next-actions .next-action > svg { flex: none; }
+.brief-page .brief-next-actions .next-action > span { font-size: 11px; }
+.brief-page .brief-next-actions small { font-size: 9px; line-height: 1.5; }
+.brief-page .brief-evidence-warning { display: flex; align-items: flex-start; gap: 7px; padding: 10px 13px; border-top: 1px solid #e9ecef; background: #fbfcfa; color: #8b9385; font-size: 10px; line-height: 1.7; flex: none; }
+.brief-page .brief-evidence-warning svg { flex: none; margin-top: 2px; }
+@media (max-width: 1280px) {
+  .workspace-content:has(> .brief-page) { padding: 19px 17px 14px; }
+  .brief-page .brief-workspace { grid-template-columns: 276px minmax(0, 1fr); gap: 10px; }
+  .brief-workspace .chat-history { padding: 10px; }
+}
+@media (max-width: 1050px) {
+  .brief-page .brief-workspace { grid-template-columns: 276px minmax(0, 1fr); }
+  .brief-page .brief-result-header { flex-wrap: wrap; padding: 13px; }
+  .brief-page .brief-next-actions .next-action > svg { display: none; }
+  .brief-page .brief-map-evidence { grid-template-columns: 1fr; }
+  .brief-page .brief-map-evidence > div + div { border-left: 0; border-top: 1px solid #e6e9ec; }
+  .brief-page .brief-result-switch > span { font-size: 9px; }
+}
+@media (max-width: 900px) {
+  .brief-page .brief-workspace { grid-template-columns: minmax(0, 1fr); }
+  .brief-workspace .chat-panel { height: 610px; min-height: 500px; max-height: none; }
+  .brief-workspace .brief-artifact { height: auto; min-height: 0; max-height: none; }
+  .brief-page .brief-artifact-content { overflow: visible; }
+  .brief-workspace .prompt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .brief-page .brief-map-evidence { grid-template-columns: 1fr 1.6fr; }
+  .brief-page .brief-map-evidence > div + div { border-left: 1px solid #e6e9ec; border-top: 0; }
+  .brief-page .brief-project-context > summary { flex-wrap: wrap; }
+  .brief-page .brief-project-context summary > span { order: 2; width: 100%; margin: 0 0 0 22px; text-align: left; }
+  .brief-page .brief-project-context summary > svg:last-child { margin-left: auto; }
+}
+@media (max-width: 760px) {
+  .brief-page .panel.brief-form { padding: 18px; }
+  .brief-page .brief-form > .form-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .brief-page .brief-form .span-two { grid-column: auto; }
+  .brief-page .brief-form > .form-actions { margin-top: 16px; }
+  .brief-page .brief-form > .form-actions > .btn { width: 100%; }
+}
